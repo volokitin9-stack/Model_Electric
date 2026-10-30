@@ -1,6 +1,7 @@
-drawing_no,brand,model,folder,status
-1,Lada,Niva Legend,specs/Wiring_1,done
-2,Lada,Vesta NG,specs/Wiring_2,pending
-3,Lada,Iskra,specs/Wiring_3,pending
-4,Lada,Granta SD LB SW,specs/Wiring_4,pending
-5,Lada,Niva Travel (2020-2023 Classic),specs/Wiring_5,pending
+drawing_no,brand,model,sheets,folder,status
+1,Lada,Niva Legend,1,specs/Wiring_1,done
+2,Lada,Vesta NG,2-1;2-2;2-3;2-4;2-5,specs/Wiring_2,done
+3,Lada,Iskra,3-1;3-2;3-3;3-4,specs/Wiring_3,done
+4,Lada,Granta SD LB SW,4-1 Left;4-2 Right;4-3,specs/Wiring_4,done
+5,Lada,Niva Travel (2020-2023 Classic),5-1;5-2,specs/Wiring_5,done
+6,?,не указана,6-1;6-2,specs/Wiring_6,done
