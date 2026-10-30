@@ -14,7 +14,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 sys.path.insert(0, os.path.dirname(__file__))
-from data import CATALOG, COMMON_REMARKS, DRAWINGS, STATUS, TERM_RANGE  # noqa: E402
+from data import CATALOG, COMMON_REMARKS, DRAWINGS, PENDING, STATUS, TERM_RANGE  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPECS = os.path.join(ROOT, "specs")
@@ -250,8 +250,10 @@ def write_md(d, conn_rows, pin_rows, bom_rows, rem, used, folder):
 
 def build_summary(results):
     wb = Workbook()
-    reg = [[d["no"], d["brand"], d["model"], len(d["sheets"]), f"specs/{d['folder']}"] for d in DRAWINGS]
-    write_sheet(wb, "Реестр", ["№ чертежа", "Марка", "Модель", "Листов", "Папка"], reg, [10, 10, 34, 8, 20], first=True)
+    reg = [[d["no"], d["brand"], d["model"], len(d["sheets"]), f"specs/{d['folder']}", "готово"] for d in DRAWINGS]
+    reg += [[no, brand, model, "", "", "ожидает схему"] for no, brand, model in PENDING]
+    write_sheet(wb, "Реестр", ["№ чертежа", "Марка", "Модель", "Листов", "Папка", "Статус"], reg,
+                [10, 14, 34, 8, 20, 16], first=True)
     # потребность по номерам: P/N x чертёж (1 комплект каждого листа)
     qty = defaultdict(lambda: defaultdict(float))
     for d, (_, _, bom, _, _) in zip(DRAWINGS, results):
@@ -285,15 +287,18 @@ def write_registry():
         for d in DRAWINGS:
             w.writerow([d["no"], d["brand"], d["model"], ";".join(s["sheet"] for s in d["sheets"]),
                         f"specs/{d['folder']}", "done"])
+        for no, brand, model in PENDING:
+            w.writerow([no, brand, model, "", "", "pending"])
     rows = [[d["no"], d["brand"], d["model"], len(d["sheets"]),
-             f"[{d['folder']}](specs/{d['folder']}/{d['folder']}_spec.md)"] for d in DRAWINGS]
+             f"[{d['folder']}](specs/{d['folder']}/{d['folder']}_spec.md)", "✅ готово"] for d in DRAWINGS]
+    rows += [[no, brand, model, "—", "—", "ожидает схему"] for no, brand, model in PENDING]
     readme = f"""# Model_Electric
 
 Спецификации разъёмов и пинов по чертежам жгутов. Каждый чертёж привязан к модели автомобиля.
 
 ## Реестр чертежей
 
-{md_table(["№ чертежа", "Марка", "Модель", "Листов", "Спецификация"], rows)}
+{md_table(["№ чертежа", "Марка", "Модель", "Листов", "Спецификация", "Статус"], rows)}
 
 Машиночитаемая версия реестра: [`drawings_registry.csv`](drawings_registry.csv).
 Сводка по всем чертежам (потребность по моделям, каталог, вся распиновка, все замечания):

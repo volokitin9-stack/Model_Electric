@@ -4,4 +4,10 @@ drawing_no,brand,model,sheets,folder,status
 3,Lada,Iskra,3-1;3-2;3-3;3-4,specs/Wiring_3,done
 4,Lada,Granta SD LB SW,4-1 Left;4-2 Right;4-3,specs/Wiring_4,done
 5,Lada,Niva Travel (2020-2023 Classic),5-1;5-2,specs/Wiring_5,done
-6,?,не указана,6-1;6-2,specs/Wiring_6,done
+6,Volkswagen,Polo V SD 2010-2020 (1),6-1;6-2,specs/Wiring_6,done
+7,Chevrolet,Niva,,,pending
+8,Lada,Granta Universal,,,pending
+9,Lada,Largus 2012-2021,,,pending
+10,Lada,Largus 2021-,,,pending
+11,Lada,Legend 1993-2021,,,pending
+12,Lada,Niva Travel 2021 Luxe,,,pending

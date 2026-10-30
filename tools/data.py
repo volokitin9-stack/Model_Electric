@@ -393,7 +393,7 @@ W5 = [
                   "Ветвь к DJ451-1: 20 + 1670 + 170 мм, отвод к K2 355 мм."]),
 ]
 
-# ---------------------------------------------------------------- чертёж 6 (модель не указана)
+# ---------------------------------------------------------------- чертёж 6 (Volkswagen Polo V SD 2010-2020)
 W6_MAIN_DEST = {1: "Поз.5 прав.", 2: "Поз.5 лев.", 3: "Поз.5 прав.", 4: "Поз.5 лев.", 5: "Поз.5 лев.",
                 6: "Поз.5 лев.", 8: "Поз.3 K1 (AX389)", 15: "Поз.2", 16: "Поз.2",
                 **{p: "Поз.8 (DJ451-1)" for p in range(9, 15)}}
@@ -452,6 +452,16 @@ W6 = [
          bom=[(1, "Контакт-гнездо FASTON 250", "41450-1", 1, "шт")], remarks=[]),
 ]
 
+# Чертежи, схемы которых ещё не получены: (№, марка, модель)
+PENDING = [
+    (7, "Chevrolet", "Niva"),
+    (8, "Lada", "Granta Universal"),
+    (9, "Lada", "Largus 2012-2021"),
+    (10, "Lada", "Largus 2021-"),
+    (11, "Lada", "Legend 1993-2021"),
+    (12, "Lada", "Niva Travel 2021 Luxe"),
+]
+
 DRAWINGS = [
     dict(no=1, brand="Lada", model="Niva Legend", folder="Wiring_1", sheets=W1,
          sources={"1": "Wiring_1_source.pdf"}),
@@ -464,7 +474,7 @@ DRAWINGS = [
                   "4-3": "Wiring_4-3_source.pdf"}),
     dict(no=5, brand="Lada", model="Niva Travel (2020-2023 Classic)", folder="Wiring_5", sheets=W5,
          sources={s: f"Wiring_{s}_source.pdf" for s in ("5-1", "5-2")}),
-    dict(no=6, brand="?", model="не указана", folder="Wiring_6", sheets=W6,
+    dict(no=6, brand="Volkswagen", model="Polo V SD 2010-2020 (1)", folder="Wiring_6", sheets=W6,
          sources={s: f"Wiring_{s}_source.pdf" for s in ("6-1", "6-2")}),
 ]
 
