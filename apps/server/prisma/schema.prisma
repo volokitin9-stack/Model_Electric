@@ -1,0 +1,66 @@
+// Схема данных "Модельная электрика".
+// SQLite для локального прототипа — архитектура (строковые статусы,
+// миграции через Prisma) без изменений переносится на PostgreSQL:
+// меняется только provider и DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Один проект модельной электропроводки.
+// Статусные поля хранятся как строки (не Prisma enum) — допустимые
+// значения для каждого поля определены в src/statuses.ts и проверяются
+// в API (zod) на входе. Так выбор значений процесса "Заказ разъёмов"
+// можно менять без миграции схемы.
+model Project {
+  id            String   @id @default(cuid())
+  name          String
+  article       String?
+  responsible   String?
+
+  overallStatus String   @default("active")
+
+  // 7 независимых процессов разработки
+  searchConnectors  String @default("not_started")
+  schemeDevelopment String @default("not_started")
+  orderConnectors   String @default("not_started")
+  payment           String @default("not_started")
+  supplyConnectors  String @default("not_started")
+  orderTooling      String @default("not_started")
+  supplyTooling     String @default("not_started")
+
+  plannedDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  changes ChangeLogEntry[]
+
+  @@index([overallStatus])
+  @@index([plannedDate])
+}
+
+// Журнал изменений — одна запись на изменённое поле при каждом
+// сохранении. Не хранит "кто" по-настоящему (авторизации пока нет),
+// поле changedBy зарезервировано под будущую систему пользователей.
+model ChangeLogEntry {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  field      String
+  fieldLabel String
+  oldValue   String?
+  newValue   String?
+
+  changedBy  String   @default("Jarvis")
+  changedAt  DateTime @default(now())
+
+  @@index([projectId])
+  @@index([changedAt])
+}
