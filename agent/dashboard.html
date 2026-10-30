@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дашборд показаний</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0: #f3f2ef;
+    --surface-1: #fcfcfb;
+    --border: #e2e1dc;
+    --grid: #ebeae6;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #7a7974;
+    --accent: #2a78d6;
+    --series-1: #2a78d6;
+    --good: #008300;
+    --warning: #b37a00;
+    --critical: #c93b3a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #111110;
+      --surface-1: #1a1a19;
+      --border: #2f2e2c;
+      --grid: #2a2a28;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8e88;
+      --accent: #3987e5;
+      --series-1: #3987e5;
+      --good: #3fae3f;
+      --warning: #d8a32a;
+      --critical: #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-0); color: var(--text-primary);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  h1 { font-size: 20px; margin: 0; }
+  .muted { color: var(--text-muted); }
+  .secondary { color: var(--text-secondary); }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  button, select, input {
+    font: inherit; color: var(--text-primary); background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; max-width: 100%;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  button.primary:disabled { opacity: .6; cursor: progress; }
+  button.ghost { cursor: pointer; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .tile .label { color: var(--text-secondary); font-size: 12px; }
+  .tile .value { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-secondary); font-weight: 500; font-size: 12px; }
+  td.num, th.num { text-align: right; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover td { background: var(--surface-0); }
+  tr.selected td { background: var(--surface-0); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  .badge { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; color: var(--text-secondary); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .err { color: var(--critical); }
+  #chart { position: relative; }
+  #chart svg { display: block; width: 100%; height: 320px; }
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    white-space: nowrap; display: none;
+  }
+  .tooltip b { font-variant-numeric: tabular-nums; }
+  .empty { padding: 40px 0; text-align: center; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Дашборд показаний</h1>
+      <div class="muted" id="folder">Папка: —</div>
+    </div>
+    <div class="row">
+      <input id="token" type="password" placeholder="Токен" hidden>
+      <span class="muted" id="scanned">Ещё не проверялась</span>
+      <button class="primary" id="scan">Проверить папку</button>
+    </div>
+  </header>
+
+  <div id="status" class="card" hidden></div>
+
+  <section class="card">
+    <div class="row" style="justify-content: space-between">
+      <strong>Файлы в папке</strong>
+      <span class="muted" id="files-summary"></span>
+    </div>
+    <div class="scroll" style="margin-top: 8px">
+      <table>
+        <thead><tr><th>Файл</th><th>Лист</th><th class="num">Строк</th><th>Период</th><th>Изменён</th><th>Статус</th></tr></thead>
+        <tbody id="files"><tr><td colspan="6" class="empty">Нажмите «Проверить папку»</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" id="detail" hidden>
+    <div class="row" style="justify-content: space-between">
+      <div>
+        <strong id="detail-title"></strong>
+        <div class="muted" id="detail-sub"></div>
+      </div>
+      <div class="row">
+        <label class="secondary" for="column">Показатель</label>
+        <select id="column"></select>
+        <button class="ghost" id="toggle-view">Таблица</button>
+      </div>
+    </div>
+    <div class="tiles" id="tiles" style="margin-top: 14px"></div>
+    <div id="chart" style="margin-top: 14px">
+      <svg id="svg" role="img"></svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+    <div class="scroll" id="data-table" hidden style="max-height: 360px; overflow-y: auto; margin-top: 14px"></div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
+const state = { result: null, sel: null, showTable: false };
+
+function storage(key, value) {
+  try {
+    if (value === undefined) return localStorage.getItem(key) || "";
+    localStorage.setItem(key, value);
+  } catch (e) { return ""; }
+}
+
+async function api(path, opts = {}) {
+  const headers = { "X-Token": $("token").value };
+  const res = await fetch(path, { ...opts, headers });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+
+function showStatus(text, isError) {
+  const el = $("status");
+  el.hidden = !text;
+  el.className = "card" + (isError ? " err" : "");
+  el.textContent = text || "";
+}
+
+function fmtDate(iso) {
+  if (iso == null) return "—";
+  if (typeof iso === "number") return "строка " + iso;
+  const d = new Date(iso);
+  const dateOnly = iso.length <= 10 || iso.endsWith("T00:00");
+  return isNaN(d) ? iso : d.toLocaleString("ru-RU", { dateStyle: "short", timeStyle: dateOnly ? undefined : "short" });
+}
+
+const CHANGE = {
+  new: ["Новый", "var(--good)"], changed: ["Изменён", "var(--warning)"], same: ["Без изменений", "var(--text-muted)"],
+};
+
+async function init() {
+  $("token").value = storage("token");
+  try {
+    const info = await api("/api/info");
+    renderInfo(info);
+    if (info.scanned_at) render(await api("/api/result"));
+  } catch (e) {
+    if (String(e.message).includes("токен")) { $("token").hidden = false; showStatus("Введите токен агента и нажмите «Проверить папку».", true); }
+    else showStatus("Агент недоступен: " + e.message, true);
+  }
+}
+
+function renderInfo(info) {
+  $("folder").textContent = "Папка: " + info.folder;
+  $("token").hidden = !info.token_required;
+  if (!info.xlsx_supported) showStatus("На ПК не установлен openpyxl — файлы .xlsx будут пропущены (pip install openpyxl).", true);
+}
+
+async function scan() {
+  const btn = $("scan");
+  btn.disabled = true; btn.textContent = "Проверяю…";
+  storage("token", $("token").value);
+  try {
+    const data = await api("/api/scan", { method: "POST" });
+    showStatus("");
+    renderInfo(await api("/api/info"));
+    render(data);
+  } catch (e) {
+    showStatus("Ошибка проверки: " + e.message, true);
+  } finally {
+    btn.disabled = false; btn.textContent = "Проверить папку";
+  }
+}
+
+function render(result) {
+  state.result = result;
+  $("scanned").textContent = result.scanned_at ? "Проверено: " + fmtDate(result.scanned_at) : "Ещё не проверялась";
+  const tbody = $("files");
+  tbody.innerHTML = "";
+  const entries = [];
+  for (const f of result.files) {
+    if (f.error || !f.tables.length) entries.push({ f, t: null, ti: -1 });
+    else f.tables.forEach((t, ti) => entries.push({ f, t, ti }));
+  }
+  const counts = { new: 0, changed: 0 };
+  result.files.forEach((f) => { if (counts[f.change] !== undefined) counts[f.change]++; });
+  $("files-summary").textContent = `${result.files.length} файлов · новых ${counts.new} · изменённых ${counts.changed}` +
+    (result.removed && result.removed.length ? ` · удалено ${result.removed.length}` : "");
+
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">В папке нет файлов CSV/Excel</td></tr>';
+  }
+  for (const { f, t, ti } of entries) {
+    const tr = document.createElement("tr");
+    const [label, color] = CHANGE[f.change] || CHANGE.same;
+    const period = t && t.period ? `${fmtDate(t.period[0])} — ${fmtDate(t.period[1])}` : "—";
+    tr.innerHTML = `<td></td><td></td><td class="num">${t ? fmt.format(t.rows) : "—"}</td><td>${period}</td>` +
+      `<td>${fmtDate(f.modified)}</td><td><span class="badge"><span class="dot" style="background:${color}"></span>${label}</span></td>`;
+    tr.children[0].textContent = f.path;
+    tr.children[1].textContent = t ? t.sheet || "—" : "";
+    if (f.error) {
+      tr.children[1].innerHTML = `<span class="err"></span>`;
+      tr.children[1].firstChild.textContent = "Ошибка: " + f.error;
+    } else if (t && t.columns.length) {
+      tr.className = "clickable";
+      tr.onclick = () => select(f.path, ti);
+    }
+    if (state.sel && state.sel.path === f.path && state.sel.ti === ti) tr.classList.add("selected");
+    tbody.appendChild(tr);
+  }
+  (result.removed || []).forEach((p) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td></td><td colspan="4" class="muted">—</td><td><span class="badge"><span class="dot" style="background:var(--critical)"></span>Удалён</span></td>`;
+    tr.children[0].textContent = p;
+    tbody.appendChild(tr);
+  });
+
+  // сохранить выбор после повторной проверки, иначе выбрать первую таблицу с данными
+  const keep = state.sel && entries.find((e) => e.f.path === state.sel.path && e.ti === state.sel.ti && e.t && e.t.columns.length);
+  const first = keep || entries.find((e) => e.t && e.t.columns.length);
+  if (first) select(first.f.path, first.ti, keep ? state.sel.col : 0);
+  else $("detail").hidden = true;
+}
+
+function current() {
+  const f = state.result.files.find((x) => x.path === state.sel.path);
+  return f && { f, t: f.tables[state.sel.ti] };
+}
+
+function select(path, ti, col = 0) {
+  const changed = !state.sel || state.sel.path !== path || state.sel.ti !== ti;
+  state.sel = { path, ti, col };
+  const { f, t } = current();
+  if (col >= t.columns.length) state.sel.col = 0;
+  [...$("files").children].forEach((tr) => tr.classList.remove("selected"));
+  const idx = [...$("files").children].findIndex((tr) => tr.children[0].textContent === path &&
+    (tr.children[1].textContent || "—") === (t.sheet || "—"));
+  if (idx >= 0) $("files").children[idx].classList.add("selected");
+
+  $("detail").hidden = false;
+  $("detail-title").textContent = f.path + (t.sheet ? " · " + t.sheet : "");
+  $("detail-sub").textContent = t.date_column ? `Время: «${t.date_column}» · ${fmt.format(t.rows)} строк` : `Столбца с датой нет · ${fmt.format(t.rows)} строк`;
+  if (changed || $("column").options.length !== t.columns.length) {
+    $("column").innerHTML = "";
+    t.columns.forEach((c, i) => $("column").add(new Option(c.name, i)));
+  }
+  $("column").value = state.sel.col;
+  renderColumn();
+}
+
+function renderColumn() {
+  const { t } = current();
+  const c = t.columns[state.sel.col];
+  const tiles = [
+    ["Последнее значение", c.last], ["Прирост (последнее − первое)", c.delta], ["Сумма", c.sum],
+    ["Среднее", c.avg], ["Минимум", c.min], ["Максимум", c.max],
+  ];
+  $("tiles").innerHTML = "";
+  for (const [label, v] of tiles) {
+    const el = document.createElement("div");
+    el.className = "tile";
+    el.innerHTML = `<div class="label"></div><div class="value">${fmt.format(v)}</div>`;
+    el.firstChild.textContent = label;
+    $("tiles").appendChild(el);
+  }
+  drawChart(c, !!t.date_column);
+  renderDataTable(c, !!t.date_column);
+}
+
+function renderDataTable(c, timed) {
+  const rows = c.series.map(([x, y]) => `<tr><td>${timed ? fmtDate(x) : x}</td><td class="num">${fmt.format(y)}</td></tr>`).join("");
+  $("data-table").innerHTML = `<table><thead><tr><th>${timed ? "Время" : "Строка"}</th><th class="num"></th></tr></thead><tbody>${rows}</tbody></table>`;
+  $("data-table").querySelector("th.num").textContent = c.name;
+  $("data-table").hidden = !state.showTable;
+  $("chart").hidden = state.showTable;
+  $("toggle-view").textContent = state.showTable ? "График" : "Таблица";
+}
+
+function niceTicks(min, max, count) {
+  if (min === max) { min -= 1; max += 1; }
+  const step0 = (max - min) / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= step0);
+  const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step;
+  const ticks = [];
+  for (let v = lo; v <= hi + step / 2; v += step) ticks.push(+v.toFixed(10));
+  return ticks;
+}
+
+function drawChart(c, timed) {
+  const svg = $("svg");
+  const W = svg.clientWidth || 800, H = 320;
+  const m = { l: 64, r: 16, t: 12, b: 32 };
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("aria-label", `График: ${c.name}`);
+  const pts = c.series.map(([x, y], i) => ({ x: timed ? new Date(x).getTime() : x, y, raw: x, i }));
+  if (!pts.length) { svg.innerHTML = ""; return; }
+  const xs = pts.map((p) => p.x);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs);
+  const ticks = niceTicks(Math.min(...pts.map((p) => p.y)), Math.max(...pts.map((p) => p.y)), 5);
+  const ymin = ticks[0], ymax = ticks[ticks.length - 1];
+  const sx = (x) => m.l + (xmax === xmin ? (W - m.l - m.r) / 2 : (x - xmin) / (xmax - xmin) * (W - m.l - m.r));
+  const sy = (y) => m.t + (1 - (y - ymin) / (ymax - ymin)) * (H - m.t - m.b);
+
+  let html = "";
+  for (const v of ticks) {
+    html += `<line x1="${m.l}" x2="${W - m.r}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--grid)" />`;
+    html += `<text x="${m.l - 8}" y="${sy(v) + 4}" text-anchor="end" font-size="11" fill="var(--text-muted)">${fmt.format(v)}</text>`;
+  }
+  const nx = Math.max(2, Math.min(6, Math.floor((W - m.l - m.r) / 120)));
+  for (let k = 0; k <= nx; k++) {
+    const x = xmin + (xmax - xmin) * k / nx;
+    const label = timed ? new Date(x).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit" }) : Math.round(x);
+    const anchor = k === 0 ? "start" : k === nx ? "end" : "middle";
+    html += `<text x="${sx(x)}" y="${H - 10}" text-anchor="${anchor}" font-size="11" fill="var(--text-muted)">${label}</text>`;
+  }
+  const d = pts.map((p, i) => `${i ? "L" : "M"}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join("");
+  html += `<path d="${d}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />`;
+  html += `<line id="cross" y1="${m.t}" y2="${H - m.b}" stroke="var(--text-muted)" stroke-dasharray="3 3" visibility="hidden" />`;
+  html += `<circle id="marker" r="5" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2" visibility="hidden" />`;
+  html += `<rect id="hit" x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" />`;
+  svg.innerHTML = html;
+
+  const tip = $("tooltip"), cross = svg.querySelector("#cross"), marker = svg.querySelector("#marker");
+  const hit = svg.querySelector("#hit");
+  hit.onmousemove = (ev) => {
+    const r = svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (W / r.width);
+    let best = pts[0];
+    for (const p of pts) if (Math.abs(sx(p.x) - px) < Math.abs(sx(best.x) - px)) best = p;
+    const cx = sx(best.x), cy = sy(best.y);
+    cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("visibility", "visible");
+    marker.setAttribute("cx", cx); marker.setAttribute("cy", cy); marker.setAttribute("visibility", "visible");
+    tip.innerHTML = `<div class="muted">${timed ? fmtDate(best.raw) : "Строка " + best.raw}</div><div><span></span>: <b>${fmt.format(best.y)}</b></div>`;
+    tip.querySelector("span").textContent = c.name;
+    tip.style.display = "block";
+    const left = cx * r.width / W;
+    tip.style.left = Math.min(left + 12, r.width - tip.offsetWidth - 4) + "px";
+    tip.style.top = Math.max(0, cy * r.height / H - 48) + "px";
+  };
+  hit.onmouseleave = () => {
+    tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); marker.setAttribute("visibility", "hidden");
+  };
+}
+
+$("scan").onclick = scan;
+$("column").onchange = (e) => { state.sel.col = +e.target.value; renderColumn(); };
+$("toggle-view").onclick = () => { state.showTable = !state.showTable; renderColumn(); };
+window.addEventListener("resize", () => { if (state.sel && !state.showTable) renderColumn(); });
+init();
+</script>
+</body>
+</html>

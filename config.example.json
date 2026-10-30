@@ -1,0 +1,10 @@
+{
+  "folder": "C:/Data/Показания",
+  "host": "127.0.0.1",
+  "port": 8765,
+  "recursive": true,
+  "extensions": [".csv", ".txt", ".xlsx", ".xlsm"],
+  "max_file_mb": 50,
+  "max_points": 500,
+  "token": ""
+}
