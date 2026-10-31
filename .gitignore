@@ -9,6 +9,13 @@ build/
 apps/server/prisma/dev.db
 apps/server/prisma/dev.db-journal
 
+# загруженные пользователем файлы (фото, импортированные прайсы) —
+# локальное файловое хранилище этапа 2, не версионируется
+apps/server/uploads/
+
+# локальная конфигурация Local Import Agent (свой путь к папке на ПК)
+apps/local-import-agent/config.json
+
 # editors
 .DS_Store
 .vscode/

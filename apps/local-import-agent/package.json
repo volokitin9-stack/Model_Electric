@@ -1,0 +1,12 @@
+{
+  "name": "@modelnaya-elektrika/local-import-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Локальный агент импорта прайс-листов поставщиков с диска пользователя — см. README",
+  "bin": { "me-import-agent": "./agent.js" },
+  "scripts": {
+    "start": "node agent.js"
+  },
+  "engines": { "node": ">=18" }
+}

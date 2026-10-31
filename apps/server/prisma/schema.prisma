@@ -39,10 +39,244 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  changes ChangeLogEntry[]
+  changes    ChangeLogEntry[]
+  components ProjectComponent[]
+  competitors ProjectCompetitor[]
+  images     ProjectImage[]
 
   @@index([overallStatus])
   @@index([plannedDate])
+}
+
+// ---------------------------------------------------------------------
+// Этап 2 — каталог комплектующих и поставщики. Единый источник правды:
+// один ComponentCatalog на внутренний артикул, используется любым
+// числом проектов через ProjectComponent; предложения поставщиков
+// (SupplierCrossReference/SupplierPrice) общие для всех проектов, где
+// встречается комплектующее — обновление цены у одного поставщика не
+// затрагивает предложения других и видно сразу во всех проектах.
+// ---------------------------------------------------------------------
+
+model ComponentCategory {
+  id   String @id @default(cuid())
+  name String @unique
+
+  components ComponentCatalog[]
+}
+
+model ComponentCatalog {
+  id              String   @id @default(cuid())
+  internalArticle String   @unique
+  name            String
+  categoryId      String?
+  category        ComponentCategory? @relation(fields: [categoryId], references: [id])
+  unit            String   @default("шт")
+  imagePath       String?
+  description     String?
+  comment         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  projectComponents ProjectComponent[]
+  crossReferences   SupplierCrossReference[]
+
+  @@index([categoryId])
+}
+
+// Спецификация одного проекта — связка проект↔комплектующее со своим
+// количеством/статусом/плановой ценой. Комплектующее само по себе не
+// дублируется на проект, дублируется только эта связка.
+model ProjectComponent {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  componentId String
+  component   ComponentCatalog @relation(fields: [componentId], references: [id])
+
+  quantity    Decimal  @default(1)
+  status      String   @default("not_defined")
+
+  primaryOfferId String?
+  primaryOffer   SupplierCrossReference? @relation(fields: [primaryOfferId], references: [id])
+
+  plannedPrice    Decimal?
+  plannedCurrency String?
+  comment         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, componentId])
+  @@index([componentId])
+  @@index([primaryOfferId])
+}
+
+model Supplier {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  name            String
+  country         String?
+  contactPerson   String?
+  phone           String?
+  email           String?
+  messenger       String?
+  website         String?
+  defaultCurrency String   @default("RUB")
+  comment         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  crossReferences SupplierCrossReference[]
+  importProfiles  SupplierImportProfile[]
+  importBatches   SupplierImportBatch[]
+  exportHistory   SupplierExportHistory[]
+}
+
+// Одна строка кроссировки = один вариант поставщика для одного нашего
+// комплектующего. У комплектующего может быть много кроссировок (разные
+// поставщики и/или разные артикулы одного поставщика); isPrimary — не
+// более одной активной "основной" кроссировки на комплектующее задаётся
+// через ProjectComponent.primaryOfferId (на уровне проекта, т.к. выбор
+// основного поставщика может отличаться между проектами).
+model SupplierCrossReference {
+  id              String   @id @default(cuid())
+  supplierId      String
+  supplier        Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  componentId     String
+  component       ComponentCatalog @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  supplierArticle String
+  status          String   @default("active") // active | discontinued
+  isPrimary       Boolean  @default(false)
+  source          String   @default("manual") // manual | import
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  prices           SupplierPrice[]
+  priceHistory     SupplierPriceHistory[]
+  usedAsPrimaryIn  ProjectComponent[]
+
+  @@unique([supplierId, componentId, supplierArticle])
+  @@index([componentId])
+  @@index([supplierId])
+}
+
+// Append-only лог прочитанных цен (каждая загрузка/правка добавляет
+// строку); актуальная цена кроссировки — самая свежая по effectiveAt.
+model SupplierPrice {
+  id                   String   @id @default(cuid())
+  crossReferenceId     String
+  crossReference       SupplierCrossReference @relation(fields: [crossReferenceId], references: [id], onDelete: Cascade)
+  price                Decimal
+  currency             String
+  minimumOrderQuantity Int?
+  availability         String?
+  leadTimeDays         Int?
+  effectiveAt          DateTime @default(now())
+  importedAt           DateTime @default(now())
+  sourceFileId         String?
+  sourceFile           SupplierImportBatch? @relation(fields: [sourceFileId], references: [id])
+
+  @@index([crossReferenceId, effectiveAt])
+}
+
+// Фиксирует именно ИЗМЕНЕНИЕ цены (old→new) — отдельно от SupplierPrice,
+// чтобы "история цены" в UI не приходилось собирать diff'ом на лету.
+model SupplierPriceHistory {
+  id               String   @id @default(cuid())
+  crossReferenceId String
+  crossReference   SupplierCrossReference @relation(fields: [crossReferenceId], references: [id], onDelete: Cascade)
+  oldPrice         Decimal?
+  newPrice         Decimal
+  currency         String
+  changedAt        DateTime @default(now())
+  sourceFileId     String?
+
+  @@index([crossReferenceId, changedAt])
+}
+
+// Сохранённый шаблон сопоставления колонок конкретного файла
+// поставщика — настраивается один раз, переиспользуется при каждом
+// следующем обновлении (см. README про Local Import Agent).
+model SupplierImportProfile {
+  id             String   @id @default(cuid())
+  supplierId     String
+  supplier       Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  profileName    String
+  fileType       String   // xlsx | xls | csv
+  sheetName      String?
+  headerRow      Int      @default(1)
+  dataStartRow   Int      @default(2)
+  columnMapping  String   // JSON: {ourArticle, supplierArticle, price, currency, availability, moq, leadTimeDays}
+  importOptions  String?  // JSON: доп. опции парсинга
+  localSourceKey String?  // код подпапки локального агента (напр. SUP01)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  batches SupplierImportBatch[]
+
+  @@index([supplierId])
+}
+
+model SupplierImportBatch {
+  id           String   @id @default(cuid())
+  supplierId   String
+  supplier     Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  profileId    String?
+  profile      SupplierImportProfile? @relation(fields: [profileId], references: [id])
+  sourceFile   String
+  sourceHash   String
+  importedAt   DateTime @default(now())
+  rowsRead     Int      @default(0)
+  rowsCreated  Int      @default(0)
+  rowsUpdated  Int      @default(0)
+  rowsRejected Int      @default(0)
+  status       String   @default("pending") // pending|previewed|applied|failed
+  reportJson   String?
+
+  prices SupplierPrice[]
+
+  @@index([supplierId, sourceHash])
+}
+
+model ProjectCompetitor {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sellerName  String
+  productName String
+  productUrl  String?
+  price       Decimal?
+  currency    String?
+  comment     String?
+  checkedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model ProjectImage {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  imagePath  String
+  mimeType   String
+  sizeBytes  Int
+  uploadedAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model SupplierExportHistory {
+  id                 String   @id @default(cuid())
+  supplierId         String
+  supplier           Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  selectedProjectIds String   // JSON-массив id проектов
+  exportedAt         DateTime @default(now())
+  rowsExported       Int
+  excludedRows       Int
+  exportStatus       String   // success|cancelled
+
+  @@index([supplierId])
 }
 
 // Журнал изменений — одна запись на изменённое поле при каждом

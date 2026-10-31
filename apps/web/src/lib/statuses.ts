@@ -122,4 +122,57 @@ export const STATUS_TONE: Record<string, StatusTone> = {
   active: "progress",
   ready: "done",
   completed: "done",
+  // статусы спецификации (ProjectComponent)
+  not_defined: "neutral",
+  searching: "progress",
+  selected: "waiting",
+  needs_review: "waiting",
+  confirmed: "done",
+  // статусы кроссировки
+  discontinued: "cancelled",
+};
+
+// --- Этап 2: спецификация комплектующих и поставщики -------------------
+
+export const COMPONENT_STATUSES = [
+  "not_defined",
+  "searching",
+  "selected",
+  "needs_review",
+  "confirmed",
+  "not_required",
+] as const;
+export type ComponentStatus = (typeof COMPONENT_STATUSES)[number];
+export const COMPONENT_STATUS_RESOLVED: readonly ComponentStatus[] = ["confirmed", "not_required"];
+
+export const COMPONENT_STATUS_LABELS: Record<ComponentStatus, string> = {
+  not_defined: "Не определён",
+  searching: "Поиск",
+  selected: "Подобран",
+  needs_review: "Требует проверки",
+  confirmed: "Подтверждён",
+  not_required: "Не требуется",
+};
+
+export const CROSS_REFERENCE_STATUSES = ["active", "discontinued"] as const;
+export const CROSS_REFERENCE_STATUS_LABELS: Record<string, string> = {
+  active: "Поставляется",
+  discontinued: "Поставки прекращены",
+};
+Object.assign(STATUS_LABELS, {
+  not_defined: COMPONENT_STATUS_LABELS.not_defined,
+  searching: COMPONENT_STATUS_LABELS.searching,
+  selected: COMPONENT_STATUS_LABELS.selected,
+  needs_review: COMPONENT_STATUS_LABELS.needs_review,
+  confirmed: COMPONENT_STATUS_LABELS.confirmed,
+  discontinued: CROSS_REFERENCE_STATUS_LABELS.discontinued,
+});
+
+export const CURRENCIES = ["RUB", "USD", "EUR", "CNY"] as const;
+
+export const AVAILABILITY_VALUES = ["yes", "no", "on_order"] as const;
+export const AVAILABILITY_LABELS: Record<string, string> = {
+  yes: "Да",
+  no: "Нет",
+  on_order: "Под заказ",
 };

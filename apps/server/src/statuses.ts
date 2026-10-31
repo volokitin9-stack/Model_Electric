@@ -127,6 +127,55 @@ export const OTHER_FIELD_LABELS: Record<string, string> = {
   plannedDate: "Плановая дата завершения",
 };
 
+// ---------------------------------------------------------------------
+// Этап 2 — статусы спецификации (ProjectComponent) и кроссировок.
+// ---------------------------------------------------------------------
+
+export const COMPONENT_STATUSES = [
+  "not_defined",
+  "searching",
+  "selected",
+  "needs_review",
+  "confirmed",
+  "not_required",
+] as const;
+export type ComponentStatus = (typeof COMPONENT_STATUSES)[number];
+
+// "Заполнена" для карточки "Заполнение спецификации" на Обзоре —
+// позиция больше не требует действия.
+export const COMPONENT_STATUS_RESOLVED: readonly ComponentStatus[] = ["confirmed", "not_required"];
+
+export const COMPONENT_STATUS_LABELS: Record<ComponentStatus, string> = {
+  not_defined: "Не определён",
+  searching: "Поиск",
+  selected: "Подобран",
+  needs_review: "Требует проверки",
+  confirmed: "Подтверждён",
+  not_required: "Не требуется",
+};
+
+export const CROSS_REFERENCE_STATUSES = ["active", "discontinued"] as const;
+export type CrossReferenceStatus = (typeof CROSS_REFERENCE_STATUSES)[number];
+export const CROSS_REFERENCE_STATUS_LABELS: Record<CrossReferenceStatus, string> = {
+  active: "Поставляется",
+  discontinued: "Поставки прекращены",
+};
+
+export const IMPORT_SOURCES = ["manual", "import"] as const;
+export const IMPORT_SOURCE_LABELS: Record<string, string> = {
+  manual: "Вручную",
+  import: "Импорт",
+};
+
+export const CURRENCIES = ["RUB", "USD", "EUR", "CNY"] as const;
+
+export const AVAILABILITY_VALUES = ["yes", "no", "on_order"] as const;
+export const AVAILABILITY_LABELS: Record<string, string> = {
+  yes: "Да",
+  no: "Нет",
+  on_order: "Под заказ",
+};
+
 export function fieldLabel(field: string): string {
   return (
     OTHER_FIELD_LABELS[field] ??
