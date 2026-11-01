@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs";
 import express from "express";
 import cors from "cors";
 import { projectsRouter } from "./routes/projects.js";
@@ -33,11 +34,23 @@ app.use("/api/imports", importsRouter);
 app.use("/api/exports", exportsRouter);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use("/api", (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
   res.status(500).json({ error: "Внутренняя ошибка сервера" });
 });
 
-app.listen(PORT, () => {
+// Прод-деплой: один сервис отдаёт и API, и собранный веб-клиент — проще
+// для доступа с телефона (один URL, без CORS). В dev-режиме (apps/web
+// поднят отдельно через Vite) этой папки нет — просто ничего не монтируем.
+const webDist = path.resolve(process.cwd(), "..", "web", "dist");
+if (fs.existsSync(webDist)) {
+  app.use(express.static(webDist));
+  app.get(/^(?!\/api|\/uploads).*/, (_req, res) => {
+    res.sendFile(path.join(webDist, "index.html"));
+  });
+  console.log(`Раздаю собранный веб-клиент из ${webDist}`);
+}
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`API сервер "Модельная электрика" слушает порт ${PORT}`);
 });

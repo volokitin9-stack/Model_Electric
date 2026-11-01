@@ -1,14 +1,15 @@
 // Схема данных "Модельная электрика".
-// SQLite для локального прототипа — архитектура (строковые статусы,
-// миграции через Prisma) без изменений переносится на PostgreSQL:
-// меняется только provider и DATABASE_URL.
+// PostgreSQL — единая база для локальной разработки и прод-деплоя
+// (облачный Postgres, см. README → "Деплой"), чтобы агенты и веб видели
+// одни и те же данные. Строковые статусы, миграции через Prisma —
+// без изменений от прежнего прототипа на SQLite.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

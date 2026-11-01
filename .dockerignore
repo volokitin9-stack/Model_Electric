@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+apps/server/uploads
+apps/server/prisma/dev.db
+apps/server/prisma/dev.db-journal
+apps/server/.env
+apps/web/.env
+apps/local-import-agent
+.git
+*.log
