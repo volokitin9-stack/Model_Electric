@@ -7,12 +7,19 @@
  *   «Чертёж»   — № чертежа, марка, модель, список листов;
  *   «BOM»      — позиции спецификации (P/N, наименование, кол-во, ед., статус);
  *   «Каталог»  — описание каждого P/N (производитель, серия, сечения, аналог, источник);
- *   «Разъёмы», «Замечания» — только для отчёта (в модели данных проекта им
- *                пока нет места, см. README агента).
+ *   «Разъёмы», «Распиновка», «Замечания» — таблицы чертежа для вкладки
+ *                «Электросхемы» проекта.
  */
 import XLSX from "xlsx";
 
 const EMPTY = new Set(["", "—", "-", "?"]);
+
+/** Как clean, но «—» оставляет как есть — для полей, где прочерк значим (пин, обозначение). */
+function text(value) {
+  if (value === null || value === undefined) return null;
+  const s = String(value).trim();
+  return s === "" ? null : s;
+}
 
 export function clean(value) {
   if (value === null || value === undefined) return null;
@@ -90,13 +97,45 @@ export function readSpecWorkbook(wb, sourceFile = "") {
     sheets,
     catalog,
     bom,
-    connectorsCount: sheetRows(wb, "Разъёмы").length,
-    pinoutCount: sheetRows(wb, "Распиновка").length,
-    notes: sheetRows(wb, "Замечания").map((r) => ({
-      topic: clean(r["Тема"]),
-      text: clean(r["Замечание"]),
-      recommendation: clean(r["Рекомендация"]),
-    })),
+    connectors: sheetRows(wb, "Разъёмы")
+      .map((r) => ({
+        sheet: text(r["Лист"]) ?? "",
+        designator: text(r["Разъём"]),
+        bomPosition: text(r["Поз. BOM"]),
+        purpose: clean(r["Назначение"]),
+        housingPn: clean(r["P/N корпуса"]),
+        manufacturer: clean(r["Производитель"]),
+        positions: clean(r["Позиций"]),
+        contactPn: clean(r["Контакт (P/N)"]),
+        contactQty: clean(r["Контактов, шт"]),
+        status: clean(r["Статус"]),
+        note: clean(r["Примечание"]),
+      }))
+      .filter((c) => c.designator),
+    pins: sheetRows(wb, "Распиновка")
+      .map((r) => ({
+        sheet: text(r["Лист"]) ?? "",
+        connector: text(r["Разъём"]),
+        housingPn: clean(r["P/N корпуса"]),
+        contactPn: clean(r["Контакт"]),
+        pin: text(r["Пин"]),
+        wire: clean(r["Провод №"]),
+        color: clean(r["Цвет"]),
+        crossSection: clean(r["Сечение, мм²"]),
+        destination: clean(r["Куда идёт"]),
+        doubleCrimp: /^да$/i.test(String(r["Двойной обжим"] ?? "").trim()),
+        crossSectionCheck: clean(r["Проверка сечения"]),
+        note: clean(r["Примечание"]),
+      }))
+      .filter((p) => p.connector),
+    notes: sheetRows(wb, "Замечания")
+      .map((r, i) => ({
+        number: Number.isInteger(Number(r["№"])) ? Number(r["№"]) : i + 1,
+        topic: clean(r["Тема"]),
+        text: text(r["Замечание"]),
+        recommendation: clean(r["Рекомендация"]),
+      }))
+      .filter((n) => n.text),
   };
 }
 

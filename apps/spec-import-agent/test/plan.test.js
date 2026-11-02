@@ -22,6 +22,19 @@ test("чтение Wiring_1: шапка, BOM, каталог", () => {
   assert.equal(spec.model, "Niva Legend");
   assert.equal(spec.bom.length, 8);
   assert.equal(spec.catalog["928522-1"].manufacturer, "TE Connectivity");
+  assert.equal(spec.connectors.length, 3);
+  assert.equal(spec.pins.length, 11);
+  assert.equal(spec.notes.length, 6);
+  const pin3 = spec.pins.filter((p) => p.connector === "X1" && p.pin === "3");
+  assert.equal(pin3.length, 2);
+  assert.ok(pin3.every((p) => p.doubleCrimp && p.crossSectionCheck));
+});
+
+test("план содержит чертёж целиком для вкладки «Электросхемы»", () => {
+  const plan = buildDrawingPlan(readSpecFile(path.join(SPECS, "Wiring_2", "Wiring_2_spec.xlsx")));
+  assert.equal(plan.drawing.sourceFile, "Wiring_2/Wiring_2_spec.xlsx");
+  assert.equal(plan.drawing.sheets.length, 5);
+  assert.ok(plan.drawing.connectors.length > 0 && plan.drawing.pins.length > 0 && plan.drawing.notes.length > 0);
 });
 
 test("план Wiring_1: позиции, статусы, провода без P/N", () => {
@@ -102,4 +115,5 @@ test("поиск проекта: привязка → артикул → наз�
   assert.equal(none.project, null);
   assert.equal(none.similar.length, 1);
   assert.equal(matchProject(projects, plan, { 6: "ME-VW-POLO5" }).project.id, "p1");
+  assert.equal(matchProject(projects, plan, {}, [{ drawingNo: 6, projectId: "p1" }]).by, "drawing");
 });

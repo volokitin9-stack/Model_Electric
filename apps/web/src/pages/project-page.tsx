@@ -10,6 +10,7 @@ import { ProjectOverviewTab } from "@/components/project-overview-tab";
 import { ProjectComponentsTab } from "@/components/project-components-tab";
 import { ProjectSuppliersTab } from "@/components/project-suppliers-tab";
 import { ProjectHistoryTab } from "@/components/project-history-tab";
+import { ProjectDrawingsTab } from "@/components/project-drawings-tab";
 import { api } from "@/lib/api";
 
 function fmtDate(iso: string | null): string {
@@ -95,7 +96,7 @@ export function ProjectPage() {
           <StubTab title="Закупки" />
         </TabsContent>
         <TabsContent value="schemes">
-          <StubTab title="Электросхемы" />
+          <ProjectDrawingsTab projectId={project.id} />
         </TabsContent>
         <TabsContent value="tooling">
           <StubTab title="Оснастка" />

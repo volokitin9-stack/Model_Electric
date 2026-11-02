@@ -166,24 +166,34 @@ export function buildDrawingPlan(spec, { nameTemplate } = {}) {
     },
     items: list,
     skippedRows: spec.bom.filter((r) => r.quantity == null).map((r) => `${r.sheet} поз.${r.position} ${r.name}`),
-    notesCount: spec.notes.length,
-    connectorsCount: spec.connectorsCount,
-    pinoutCount: spec.pinoutCount,
+    drawing: {
+      brand: spec.brand,
+      model: spec.model,
+      sourceFile: spec.sourceFile ? spec.sourceFile.split(/[\\/]/).slice(-2).join("/") : null,
+      sheets: spec.sheets,
+      connectors: spec.connectors,
+      pins: spec.pins,
+      notes: spec.notes,
+    },
   };
 }
 
 /**
  * Ищет существующий проект для чертежа: явная привязка из конфигурации
- * (projectMap: {"<№ чертежа>": "<id или артикул проекта>"}) → артикул →
+ * (projectMap: {"<№ чертежа>": "<id или артикул проекта>"}) → проект, куда
+ * этот чертёж уже загружен → артикул →
  * точное название. Нечёткое совпадение не используется — вместо этого
  * в отчёт попадают «похожие» проекты, чтобы человек сам добавил привязку.
  */
-export function matchProject(projects, plan, projectMap = {}) {
+export function matchProject(projects, plan, projectMap = {}, drawings = []) {
   const mapped = projectMap[String(plan.drawingNo)];
   if (mapped) {
     const p = projects.find((x) => x.id === mapped || x.article === mapped);
     return { project: p ?? null, by: "map", mappedTo: mapped, similar: [] };
   }
+  const linked = drawings.find((d) => d.drawingNo === plan.drawingNo);
+  const byDrawing = linked && projects.find((x) => x.id === linked.projectId);
+  if (byDrawing) return { project: byDrawing, by: "drawing", similar: [] };
   const byArticle = projects.find((x) => x.article && normalizeArticle(x.article) === normalizeArticle(plan.project.article));
   if (byArticle) return { project: byArticle, by: "article", similar: [] };
   const lc = (s) => String(s ?? "").trim().toLowerCase();

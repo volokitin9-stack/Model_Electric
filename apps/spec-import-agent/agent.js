@@ -9,7 +9,9 @@
  *   2. заводит недостающие позиции в общем каталоге комплектующих
  *      (с категорией, описанием и комментарием из листа «Каталог»);
  *   3. сверяет спецификацию проекта с BOM чертежа: добавляет новые позиции,
- *      обновляет количество, повышает статус, если P/N подтвердили.
+ *      обновляет количество, повышает статус, если P/N подтвердили;
+ *   4. загружает сам чертёж — листы, разъёмы, распиновку, замечания —
+ *      на вкладку «Электросхемы» проекта (целиком, если файл изменился).
  *
  * Запуск:  node agent.js [--apply] [--drawing N] [--config путь] [--specs папка] [--report файл.json] [--prune]
  *
@@ -101,7 +103,7 @@ const fmtQty = (n) => String(Number(n));
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
-    console.log(fs.readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 18).join("\n"));
+    console.log(fs.readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 20).join("\n"));
     return;
   }
   const config = loadConfig(args);
@@ -135,6 +137,10 @@ async function main() {
   const projects = await api.get("/api/projects");
   const categories = await api.get("/api/categories");
   const catalog = await api.get("/api/components");
+  const drawings = await api.get("/api/drawings").catch((e) => {
+    if (e.status === 404) throw new Error("на сервере нет /api/drawings — обновите сервер до версии с вкладкой «Электросхемы»");
+    throw e;
+  });
   if (catalog.length >= 500) {
     console.warn("⚠ API вернул 500 комплектующих (предел GET /api/components) — сопоставление по каталогу может быть неполным.");
   }
@@ -151,7 +157,7 @@ async function main() {
   }
 
   const report = { startedAt: new Date().toISOString(), apply: args.apply, server: config.serverUrl, drawings: [] };
-  const totals = { projectsCreated: 0, catalogCreated: 0, catalogFilled: 0, added: 0, updated: 0, extra: 0, removed: 0, errors: 0 };
+  const totals = { drawings: 0, projectsCreated: 0, catalogCreated: 0, catalogFilled: 0, added: 0, updated: 0, extra: 0, removed: 0, errors: 0 };
   const catalogPlanned = new Set(); // в режиме отчёта не считать одно и то же новое комплектующее дважды
 
   for (const plan of plans) {
@@ -165,11 +171,11 @@ async function main() {
 
     try {
       // 1. проект
-      const m = matchProject(projects, plan, config.projectMap);
+      const m = matchProject(projects, plan, config.projectMap, drawings);
       let project = m.project;
       if (m.by === "map" && !project) throw new Error(`в projectMap указан проект "${m.mappedTo}", но в системе его нет`);
       if (project) {
-        log(`проект найден (${m.by === "map" ? "привязка из config" : m.by === "article" ? "по артикулу" : "по названию"}): ${project.name} [${project.article ?? project.id}]`);
+        log(`проект найден (${m.by === "map" ? "привязка из config" : m.by === "drawing" ? "чертёж уже загружен в него" : m.by === "article" ? "по артикулу" : "по названию"}): ${project.name} [${project.article ?? project.id}]`);
       } else {
         if (m.similar.length) log(`⚠ похожие проекты: ${m.similar.join(", ")} — если это тот же, добавьте "projectMap": {"${plan.drawingNo}": "<артикул>"} в config.json`);
         log(`создать проект: ${plan.project.name} [${plan.project.article}]`);
@@ -261,7 +267,17 @@ async function main() {
       }
       if (diff.unchanged.length) log(`без изменений: ${diff.unchanged.length} поз.`);
       if (plan.skippedRows.length) log(`⚠ пропущены строки BOM без количества: ${plan.skippedRows.join("; ")}`);
-      log(`в файле также: разъёмов ${plan.connectorsCount}, строк распиновки ${plan.pinoutCount}, замечаний ${plan.notesCount} — в модели проекта для них пока нет полей`);
+      // 4. чертёж целиком: листы, разъёмы, распиновка, замечания (вкладка «Электросхемы»)
+      const d = plan.drawing;
+      const what = `разъёмов ${d.connectors.length}, пинов ${d.pins.length}, замечаний ${d.notes.length}, листов ${d.sheets.length}`;
+      let dStatus = "created";
+      if (project?.id) {
+        const q = args.apply ? "" : "?dryRun=1";
+        dStatus = (await api.request("PUT", `/api/projects/${project.id}/drawings/${plan.drawingNo}${q}`, d)).status;
+      }
+      const label = { created: "загрузить", updated: "обновить", moved: "перенести в этот проект", unchanged: "без изменений" }[dStatus];
+      log(`чертёж №${plan.drawingNo}: ${label} (${what})`);
+      if (dStatus !== "unchanged") totals.drawings++;
     } catch (e) {
       totals.errors++;
       r.errors.push(e.message);
@@ -273,7 +289,8 @@ async function main() {
   console.log(
     `\nИтого${args.apply ? "" : " (план)"}: проектов создано ${totals.projectsCreated}, ` +
       `каталог +${totals.catalogCreated} / дополнено ${totals.catalogFilled}, ` +
-      `позиций спецификации +${totals.added} / изменено ${totals.updated} / удалено ${totals.removed} / лишних ${totals.extra}, ошибок ${totals.errors}`,
+      `позиций спецификации +${totals.added} / изменено ${totals.updated} / удалено ${totals.removed} / лишних ${totals.extra}, ` +
+      `чертежей загружено/обновлено ${totals.drawings}, ошибок ${totals.errors}`,
   );
   if (!args.apply) console.log("Ничего не записано. Для применения: node agent.js --apply");
   if (args.reportPath) {

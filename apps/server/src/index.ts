@@ -11,12 +11,14 @@ import { crossReferencesRouter } from "./routes/crossReferences.js";
 import { projectSummaryRouter, projectImagesRouter, projectCompetitorsRouter } from "./routes/projectExtras.js";
 import { importsRouter } from "./routes/imports.js";
 import { exportsRouter } from "./routes/exports.js";
+import { drawingsRouter, projectDrawingsRouter } from "./routes/drawings.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 
 app.use(cors());
-app.use(express.json());
+// чертёж с распиновкой целиком приходит одним запросом от spec-import-agent
+app.use(express.json({ limit: "5mb" }));
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
@@ -24,6 +26,7 @@ app.use("/api/projects/:projectId/summary", projectSummaryRouter);
 app.use("/api/projects/:projectId/components", projectComponentsRouter);
 app.use("/api/projects/:projectId/images", projectImagesRouter);
 app.use("/api/projects/:projectId/competitors", projectCompetitorsRouter);
+app.use("/api/projects/:projectId/drawings", projectDrawingsRouter);
 app.use("/api/projects", projectsRouter);
 app.use("/api/changelog", changelogRouter);
 app.use("/api/categories", categoriesRouter);
@@ -32,6 +35,7 @@ app.use("/api/suppliers", suppliersRouter);
 app.use("/api/cross-references", crossReferencesRouter);
 app.use("/api/imports", importsRouter);
 app.use("/api/exports", exportsRouter);
+app.use("/api/drawings", drawingsRouter);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use("/api", (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
