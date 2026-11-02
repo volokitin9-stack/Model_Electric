@@ -10,6 +10,7 @@ COPY apps/web/ ./
 RUN npm run build
 
 FROM node:20-slim AS server-build
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app/server
 COPY apps/server/package*.json ./
 RUN npm ci
@@ -18,6 +19,7 @@ RUN npx prisma generate
 RUN npm run build
 
 FROM node:20-slim AS runtime
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 ENV NODE_ENV=production
 COPY apps/server/package*.json ./
