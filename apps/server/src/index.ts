@@ -13,6 +13,7 @@ import { importsRouter } from "./routes/imports.js";
 import { exportsRouter } from "./routes/exports.js";
 import { apiKeyMiddleware } from "./auth.js";
 import { drawingsRouter, projectDrawingsRouter } from "./routes/drawings.js";
+import { specImportRouter } from "./routes/specImport.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -44,6 +45,7 @@ app.use("/api/cross-references", crossReferencesRouter);
 app.use("/api/imports", importsRouter);
 app.use("/api/exports", exportsRouter);
 app.use("/api/drawings", drawingsRouter);
+app.use("/api/spec-import", specImportRouter);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use("/api", (err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

@@ -1,13 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Plus, ScrollText, Search } from "lucide-react";
+import { Plus, RefreshCw, ScrollText, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { KpiCards } from "@/components/kpi-cards";
 import { ProjectsTable } from "@/components/projects-table";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
 import { ProjectSidePanel } from "@/components/project-side-panel";
+import { SpecImportDialog } from "@/components/spec-import-dialog";
 import { api } from "@/lib/api";
 import { computeKpis, matchesKpi, type KpiKey } from "@/lib/kpi";
 import type { Project } from "@/lib/types";
@@ -19,6 +20,7 @@ export function DashboardPage() {
   const [search, setSearch] = useState("");
   const [activeKpi, setActiveKpi] = useState<KpiKey | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [specImportOpen, setSpecImportOpen] = useState(false);
   const [panelProject, setPanelProject] = useState<Project | null>(null);
 
   const data = projectsQuery.data ?? [];
@@ -58,6 +60,9 @@ export function DashboardPage() {
             <ScrollText className="h-4 w-4" /> Журнал
           </Link>
         </Button>
+        <Button variant="outline" onClick={() => setSpecImportOpen(true)}>
+          <RefreshCw className="h-4 w-4" /> Обновить данные
+        </Button>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="h-4 w-4" /> Создать проект
         </Button>
@@ -83,6 +88,7 @@ export function DashboardPage() {
       )}
 
       <ProjectFormDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <SpecImportDialog open={specImportOpen} onOpenChange={setSpecImportOpen} />
       <ProjectSidePanel project={panelProject} onOpenChange={(v) => !v && setPanelProject(null)} />
     </div>
   );

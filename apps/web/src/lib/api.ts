@@ -17,6 +17,7 @@ import type {
   ProjectImage,
   ProjectInput,
   ProjectSummary,
+  SpecImportReport,
   Supplier,
   SupplierDetail,
 } from "./types";
@@ -89,6 +90,10 @@ export const api = {
   // --- Этап 2 --------------------------------------------------------
 
   listProjectDrawings: (projectId: string) => request<ProjectDrawing[]>(`/projects/${projectId}/drawings`),
+
+  // Кнопка "Обновить данные" на дашборде — сервер сам запускает
+  // spec-import-agent; apply:false только показывает план.
+  runSpecImport: (apply: boolean) => request<SpecImportReport>("/spec-import/run", { method: "POST", body: JSON.stringify({ apply }) }),
 
   projectSummary: (projectId: string) => request<ProjectSummary>(`/projects/${projectId}/summary`),
 

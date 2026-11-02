@@ -299,3 +299,30 @@ export type ProjectDrawing = {
   pins: DrawingPin[];
   notes: DrawingNote[];
 };
+
+// --- Кнопка "Обновить данные" на дашборде: сервер сам запускает
+// spec-import-agent и возвращает его отчёт (план или результат записи) ---
+
+export type SpecImportReport = {
+  startedAt: string;
+  apply: boolean;
+  server: string;
+  drawings: Array<{
+    drawingNo: number;
+    file: string;
+    actions: string[];
+    errors: string[];
+    project?: { id?: string; name: string; article?: string | null };
+  }>;
+  totals: {
+    drawings: number;
+    projectsCreated: number;
+    catalogCreated: number;
+    catalogFilled: number;
+    added: number;
+    updated: number;
+    extra: number;
+    removed: number;
+    errors: number;
+  };
+};
