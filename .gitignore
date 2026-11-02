@@ -1,0 +1,26 @@
+node_modules/
+dist/
+build/
+*.log
+.env
+.env.local
+
+# SQLite
+apps/server/prisma/dev.db
+apps/server/prisma/dev.db-journal
+
+# загруженные пользователем файлы (фото, импортированные прайсы) —
+# локальное файловое хранилище этапа 2, не версионируется
+apps/server/uploads/
+
+# локальная конфигурация Local Import Agent (свой путь к папке на ПК)
+apps/local-import-agent/config.json
+
+# editors
+.DS_Store
+.vscode/
+.idea/
+
+# локальная конфигурация Spec Import Agent
+apps/spec-import-agent/config.json
+__pycache__/

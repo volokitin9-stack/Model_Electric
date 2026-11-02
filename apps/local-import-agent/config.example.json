@@ -1,0 +1,6 @@
+{
+  "serverUrl": "http://localhost:4000",
+  "agentToken": "",
+  "rootFolder": "C:\\ModelElectric\\Suppliers",
+  "fileExtensions": [".xlsx", ".xls", ".csv"]
+}
