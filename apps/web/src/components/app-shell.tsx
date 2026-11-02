@@ -3,7 +3,7 @@ import { LayoutDashboard, ScrollText, Truck, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Дашборд", icon: LayoutDashboard, end: true },
+  { to: "/", label: "Проекты", icon: LayoutDashboard, end: true },
   { to: "/suppliers", label: "Поставщики", icon: Truck, end: false },
   { to: "/journal", label: "Журнал", icon: ScrollText, end: false },
 ];
