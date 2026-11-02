@@ -45,6 +45,8 @@ function parseArgs(argv) {
 }
 
 function loadConfig(args) {
+  const sharedPath = path.join(HERE, "project-map.json");
+  const shared = fs.existsSync(sharedPath) ? JSON.parse(fs.readFileSync(sharedPath, "utf8")) : {};
   let raw = {};
   if (fs.existsSync(args.configPath)) raw = JSON.parse(fs.readFileSync(args.configPath, "utf8"));
   const specsFolder = path.resolve(
@@ -56,7 +58,9 @@ function loadConfig(args) {
     agentToken: raw.agentToken ?? process.env.AGENT_API_TOKEN ?? "",
     specsFolder,
     projectNameTemplate: raw.projectNameTemplate ?? "{brand} {model} — проводка ТСУ",
-    projectMap: raw.projectMap ?? {},
+    // project-map.json (в репозитории) + projectMap из config.json (локально, приоритетнее)
+    projectMap: { ...shared.projectMap, ...(raw.projectMap ?? {}) },
+    separateProjects: { ...shared.separateProjects, ...(raw.separateProjects ?? {}) },
     responsible: raw.responsible ?? null,
   };
 }
@@ -173,11 +177,13 @@ async function main() {
       // 1. проект
       const m = matchProject(projects, plan, config.projectMap, drawings);
       let project = m.project;
-      if (m.by === "map" && !project) throw new Error(`в projectMap указан проект "${m.mappedTo}", но в системе его нет`);
+      if (m.by === "map" && !project) throw new Error(`в projectMap указан проект "${m.mappedTo}", но в системе нет проекта с таким id, артикулом или названием`);
       if (project) {
-        log(`проект найден (${m.by === "map" ? "привязка из config" : m.by === "drawing" ? "чертёж уже загружен в него" : m.by === "article" ? "по артикулу" : "по названию"}): ${project.name} [${project.article ?? project.id}]`);
+        log(`проект найден (${m.by === "map" ? "привязка из project-map.json/config" : m.by === "drawing" ? "чертёж уже загружен в него" : m.by === "article" ? "по артикулу" : "по названию"}): ${project.name} [${project.article ?? project.id}]`);
       } else {
-        if (m.similar.length) log(`⚠ похожие проекты: ${m.similar.join(", ")} — если это тот же, добавьте "projectMap": {"${plan.drawingNo}": "<артикул>"} в config.json`);
+        if (m.similar.length && config.separateProjects[String(plan.drawingNo)]) {
+          log(`отдельный проект (project-map.json): ${config.separateProjects[String(plan.drawingNo)]}`);
+        } else if (m.similar.length) log(`⚠ похожие проекты: ${m.similar.join(", ")} — если это тот же, добавьте "projectMap": {"${plan.drawingNo}": "<артикул>"} в config.json`);
         log(`создать проект: ${plan.project.name} [${plan.project.article}]`);
         totals.projectsCreated++;
         if (args.apply) {

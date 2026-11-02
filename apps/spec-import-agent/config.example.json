@@ -4,7 +4,5 @@
   "specsFolder": "../../specs",
   "projectNameTemplate": "{brand} {model} — проводка ТСУ",
   "responsible": null,
-  "projectMap": {
-    "6": "ME-VW-POLO5"
-  }
+  "projectMap": {}
 }

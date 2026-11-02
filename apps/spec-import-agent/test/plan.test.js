@@ -117,3 +117,15 @@ test("поиск проекта: привязка → артикул → наз�
   assert.equal(matchProject(projects, plan, { 6: "ME-VW-POLO5" }).project.id, "p1");
   assert.equal(matchProject(projects, plan, {}, [{ drawingNo: 6, projectId: "p1" }]).by, "drawing");
 });
+
+test("project-map.json: Polo V SD → Polo 5, Largus 2012-2021 — отдельный проект", async () => {
+  const fs = await import("node:fs");
+  const map = JSON.parse(fs.readFileSync(new URL("../project-map.json", import.meta.url), "utf8"));
+  assert.equal(map.projectMap["6"], "ME-VW-POLO5");
+  assert.ok(map.separateProjects["9"]);
+  assert.equal(map.projectMap["9"], undefined);
+  const projects = [{ id: "p1", name: "Volkswagen Polo 5 — проводка ТСУ", article: "ME-VW-POLO5" }];
+  const plan = { drawingNo: 6, project: { name: "x", article: "y" } };
+  assert.equal(matchProject(projects, plan, { 6: "me vw polo5" }).project.id, "p1");
+  assert.equal(matchProject(projects, plan, { 6: "Volkswagen Polo 5 — проводка ТСУ" }).project.id, "p1");
+});

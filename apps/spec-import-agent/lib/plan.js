@@ -188,7 +188,10 @@ export function buildDrawingPlan(spec, { nameTemplate } = {}) {
 export function matchProject(projects, plan, projectMap = {}, drawings = []) {
   const mapped = projectMap[String(plan.drawingNo)];
   if (mapped) {
-    const p = projects.find((x) => x.id === mapped || x.article === mapped);
+    const lc = (v) => String(v ?? "").trim().toLowerCase();
+    const p = projects.find(
+      (x) => x.id === mapped || (x.article && normalizeArticle(x.article) === normalizeArticle(mapped)) || lc(x.name) === lc(mapped),
+    );
     return { project: p ?? null, by: "map", mappedTo: mapped, similar: [] };
   }
   const linked = drawings.find((d) => d.drawingNo === plan.drawingNo);
