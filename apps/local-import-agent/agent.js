@@ -53,7 +53,7 @@ function loadConfig(configPath) {
   if (!fs.existsSync(configPath)) {
     console.error(
       `Файл конфигурации не найден: ${configPath}\n` +
-        `Скопируйте config.example.json в config.json и укажите rootFolder/serverUrl/agentToken.`,
+        `Скопируйте config.example.json в config.json и укажите rootFolder/serverUrl/apiKey.`,
     );
     process.exit(1);
   }
@@ -68,20 +68,19 @@ function loadConfig(configPath) {
   }
   return {
     serverUrl: raw.serverUrl || "http://localhost:4000",
-    agentToken: raw.agentToken || "",
+    apiKey: raw.apiKey || "",
     rootFolder: raw.rootFolder,
     fileExtensions: raw.fileExtensions || ALLOWED_EXTENSIONS_DEFAULT,
   };
 }
 
 function authHeaders(config) {
-  // Канал считается "защищённым" в меру того, что вообще есть у
-  // приложения на этом этапе — токен передаётся отдельным заголовком,
-  // а не как часть URL/лога. Полноценная авторизация пользователей в
-  // системе пока не реализована (см. README корня репозитория,
-  // раздел "Известные ограничения") — агент honestly наследует то же
-  // ограничение, а не имитирует более сильную защиту, чем есть.
-  return config.agentToken ? { "x-agent-token": config.agentToken } : {};
+  // Тот же общий ключ доступа, что защищает весь /api/* (см.
+  // apps/server/src/auth.ts и переменную API_KEY на сервере) —
+  // передаётся отдельным заголовком, не как часть URL/лога. Если на
+  // сервере API_KEY не задан (локальная разработка), ключ не нужен —
+  // сервер тогда ничего не проверяет.
+  return config.apiKey ? { "x-api-key": config.apiKey } : {};
 }
 
 async function apiGet(config, pathname) {

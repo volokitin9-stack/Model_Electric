@@ -11,6 +11,7 @@ import { crossReferencesRouter } from "./routes/crossReferences.js";
 import { projectSummaryRouter, projectImagesRouter, projectCompetitorsRouter } from "./routes/projectExtras.js";
 import { importsRouter } from "./routes/imports.js";
 import { exportsRouter } from "./routes/exports.js";
+import { apiKeyMiddleware } from "./auth.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -19,7 +20,14 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
+// Хостинг (Render/Railway) пингует этот путь для health-check — он
+// должен отвечать всегда, без ключа.
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
+
+// Единый ключ доступа ко всему остальному /api/* — см. src/auth.ts.
+app.use("/api", apiKeyMiddleware);
+app.get("/api/auth/check", (_req, res) => res.json({ ok: true }));
+
 app.use("/api/projects/:projectId/summary", projectSummaryRouter);
 app.use("/api/projects/:projectId/components", projectComponentsRouter);
 app.use("/api/projects/:projectId/images", projectImagesRouter);

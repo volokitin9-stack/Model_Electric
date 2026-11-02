@@ -21,12 +21,52 @@ import type {
 } from "./types";
 
 const BASE = "/api";
+const API_KEY_STORAGE = "me.apiKey";
+
+export function getStoredApiKey(): string | null {
+  try {
+    return localStorage.getItem(API_KEY_STORAGE);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredApiKey(key: string) {
+  try {
+    localStorage.setItem(API_KEY_STORAGE, key);
+  } catch {
+    // недоступно (приватный режим и т.п.) — ключ просто не переживёт перезагрузку
+  }
+}
+
+function clearStoredApiKey() {
+  try {
+    localStorage.removeItem(API_KEY_STORAGE);
+  } catch {
+    // ignore
+  }
+}
+
+function authHeaders(): Record<string, string> {
+  const key = getStoredApiKey();
+  return key ? { "x-api-key": key } : {};
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
-    headers: init?.body instanceof FormData ? undefined : { "Content-Type": "application/json" },
+    headers: {
+      ...(init?.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
+      ...authHeaders(),
+    },
     ...init,
   });
+  if (res.status === 401) {
+    // Сохранённый ключ больше не подходит (сброшен на сервере/не тот) —
+    // просим ввести заново вместо того, чтобы молча заваливать все запросы.
+    clearStoredApiKey();
+    window.location.reload();
+    throw new Error("Требуется ключ доступа");
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error ?? `Ошибка запроса: ${res.status}`);
@@ -124,7 +164,7 @@ export const api = {
 export async function downloadExport(data: { supplierId: string; projectIds: string[]; currency?: string }) {
   const res = await fetch(`${BASE}/exports/download`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(data),
   });
   if (!res.ok) {

@@ -11,22 +11,9 @@ export const importsRouter = Router();
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 15 * 1024 * 1024 } });
 
-// Если задан AGENT_API_TOKEN, запросы с заголовком x-agent-token обязаны
-// его предъявить и он обязан совпасть (так Local Import Agent — то есть
-// неинтерактивный клиент, а не человек в браузере — ходит по
-// отдельному защищённому каналу, ТЗ §17.3). Запросы без этого
-// заголовка (обычные вызовы из веб-интерфейса) не блокируются — в
-// приложении пока нет полноценной системы пользователей, это
-// отдельный минимальный контур именно для агента, а не замена
-// полноценной авторизации.
-importsRouter.use((req, res, next) => {
-  const token = process.env.AGENT_API_TOKEN;
-  const presented = req.header("x-agent-token");
-  if (token && presented && presented !== token) {
-    return res.status(401).json({ error: "Неверный токен агента" });
-  }
-  next();
-});
+// Доступ сюда (как и ко всему /api/*) защищён общим ключом API_KEY —
+// см. src/auth.ts, подключается централизованно в index.ts. Local
+// Import Agent передаёт тот же ключ в заголовке x-api-key.
 
 // --- Шаблоны сопоставления колонок (SupplierImportProfile) ------------
 
