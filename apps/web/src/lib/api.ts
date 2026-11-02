@@ -13,6 +13,7 @@ import type {
   Project,
   ProjectComponent,
   ProjectCompetitor,
+  ProjectDrawing,
   ProjectImage,
   ProjectInput,
   ProjectSummary,
@@ -86,6 +87,8 @@ export const api = {
   changelog: (limit = 100) => request<ChangeLogEntry[]>(`/changelog?limit=${limit}`),
 
   // --- Этап 2 --------------------------------------------------------
+
+  listProjectDrawings: (projectId: string) => request<ProjectDrawing[]>(`/projects/${projectId}/drawings`),
 
   projectSummary: (projectId: string) => request<ProjectSummary>(`/projects/${projectId}/summary`),
 

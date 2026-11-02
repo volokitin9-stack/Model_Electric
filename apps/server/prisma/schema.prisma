@@ -44,6 +44,7 @@ model Project {
   components ProjectComponent[]
   competitors ProjectCompetitor[]
   images     ProjectImage[]
+  drawings   ProjectDrawing[]
 
   @@index([overallStatus])
   @@index([plannedDate])
@@ -298,4 +299,87 @@ model ChangeLogEntry {
 
   @@index([projectId])
   @@index([changedAt])
+}
+
+
+// ---------------------------------------------------------------------
+// Чертежи жгутов (вкладка «Электросхемы»). Заполняются агентом
+// apps/spec-import-agent из specs/Wiring_N/Wiring_N_spec.xlsx. Чертёж —
+// источник правды для своих разъёмов/распиновки/замечаний: при каждой
+// загрузке они заменяются целиком (ручного редактирования этих таблиц
+// в вебе нет). contentHash позволяет не перезаписывать и не плодить
+// записи журнала, если содержимое файла не изменилось.
+// ---------------------------------------------------------------------
+
+model ProjectDrawing {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  drawingNo   Int      @unique
+  brand       String
+  model       String
+  sourceFile  String?
+  sheetsJson  String   // JSON: [{sheet, description}]
+  contentHash String
+  importedAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  connectors DrawingConnector[]
+  pins       DrawingPin[]
+  notes      DrawingNote[]
+
+  @@index([projectId])
+}
+
+model DrawingConnector {
+  id           String  @id @default(cuid())
+  drawingId    String
+  drawing      ProjectDrawing @relation(fields: [drawingId], references: [id], onDelete: Cascade)
+  sortOrder    Int
+  sheet        String
+  designator   String
+  bomPosition  String?
+  purpose      String?
+  housingPn    String?
+  manufacturer String?
+  positions    String?
+  contactPn    String?
+  contactQty   String?
+  status       String?
+  note         String?
+
+  @@index([drawingId])
+}
+
+model DrawingPin {
+  id                String  @id @default(cuid())
+  drawingId         String
+  drawing           ProjectDrawing @relation(fields: [drawingId], references: [id], onDelete: Cascade)
+  sortOrder         Int
+  sheet             String
+  connector         String
+  housingPn         String?
+  contactPn         String?
+  pin               String?
+  wire              String?
+  color             String?
+  crossSection      String?
+  destination       String?
+  doubleCrimp       Boolean @default(false)
+  crossSectionCheck String?
+  note              String?
+
+  @@index([drawingId])
+}
+
+model DrawingNote {
+  id             String  @id @default(cuid())
+  drawingId      String
+  drawing        ProjectDrawing @relation(fields: [drawingId], references: [id], onDelete: Cascade)
+  number         Int
+  topic          String?
+  text           String
+  recommendation String?
+
+  @@index([drawingId])
 }

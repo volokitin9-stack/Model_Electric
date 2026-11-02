@@ -20,3 +20,7 @@ apps/local-import-agent/config.json
 .DS_Store
 .vscode/
 .idea/
+
+# локальная конфигурация Spec Import Agent
+apps/spec-import-agent/config.json
+__pycache__/

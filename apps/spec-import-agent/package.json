@@ -1,0 +1,16 @@
+{
+  "name": "@modelnaya-elektrika/spec-import-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Агент переноса спецификаций чертежей (specs/Wiring_N/*_spec.xlsx) в проекты «Модельной электрики» — см. README",
+  "bin": { "me-spec-agent": "./agent.js" },
+  "scripts": {
+    "start": "node agent.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "engines": { "node": ">=18" }
+}

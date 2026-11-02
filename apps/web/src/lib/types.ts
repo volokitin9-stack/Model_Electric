@@ -249,3 +249,53 @@ export type ProjectSummary = {
   missingCount: number;
   componentCount: number;
 };
+
+// --- Чертежи жгутов (вкладка «Электросхемы», загружает spec-import-agent) ---
+
+export type DrawingConnector = {
+  id: string;
+  sheet: string;
+  designator: string;
+  bomPosition: string | null;
+  purpose: string | null;
+  housingPn: string | null;
+  manufacturer: string | null;
+  positions: string | null;
+  contactPn: string | null;
+  contactQty: string | null;
+  status: string | null;
+  note: string | null;
+};
+
+export type DrawingPin = {
+  id: string;
+  sheet: string;
+  connector: string;
+  housingPn: string | null;
+  contactPn: string | null;
+  pin: string | null;
+  wire: string | null;
+  color: string | null;
+  crossSection: string | null;
+  destination: string | null;
+  doubleCrimp: boolean;
+  crossSectionCheck: string | null;
+  note: string | null;
+};
+
+export type DrawingNote = { id: string; number: number; topic: string | null; text: string; recommendation: string | null };
+
+export type ProjectDrawing = {
+  id: string;
+  projectId: string;
+  drawingNo: number;
+  brand: string;
+  model: string;
+  sourceFile: string | null;
+  sheets: { sheet: string; description: string | null }[];
+  importedAt: string;
+  updatedAt: string;
+  connectors: DrawingConnector[];
+  pins: DrawingPin[];
+  notes: DrawingNote[];
+};

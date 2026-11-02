@@ -24,6 +24,10 @@ apps/
   web/                — React-клиент (Vite)
   local-import-agent/ — локальный CLI-агент для чтения прайс-листов
                         поставщиков с диска (см. его README)
+  spec-import-agent/  — агент переноса Excel-спецификаций чертежей
+                        (specs/) в проекты: проект, каталог, BOM
+specs/                — спецификации разъёмов и пинов по чертежам жгутов
+tools/                — генератор спецификаций (build_specs.py, data.py)
 ```
 Общий npm-workspace сознательно не настраивался (независимые
 `package.json` — так на старте проще ставить/запускать по отдельности);
@@ -180,6 +184,9 @@ CLI — он не станет конфликтовать с этими файл
 | PATCH | `/api/projects/:id` | частичное обновление, пишет записи в журнал на каждое изменённое поле |
 | GET | `/api/projects/:id/changelog` | история изменений одного проекта |
 | GET | `/api/changelog?limit=` | глобальный журнал по всем проектам |
+| GET | `/api/drawings` | список загруженных чертежей и их проектов |
+| GET | `/api/projects/:id/drawings` | чертежи проекта с разъёмами, распиновкой, замечаниями |
+| PUT | `/api/projects/:id/drawings/:drawingNo[?dryRun=1]` | загрузить/заменить чертёж целиком (используется spec-import-agent) |
 
 Эндпоинта `DELETE` нет — удаление проектов не входило в границы этого
 этапа.
@@ -196,8 +203,10 @@ CLI — он не станет конфликтовать с этими файл
 страницей), расчёт прогресса/следующего действия.
 
 Страница проекта (`/projects/:id`) — 7 вкладок: Обзор/Комплектующие/
-Поставщики/История рабочие (см. Этап 2 ниже), Закупки/Электросхемы/
-Оснастка — маршруты-заглушки под следующий этап.
+Поставщики/История рабочие (см. Этап 2 ниже), Электросхемы — чертежи
+жгутов из `specs/` (листы, разъёмы, распиновка, замечания; загружает
+`apps/spec-import-agent`), Закупки/Оснастка — маршруты-заглушки под
+следующий этап.
 
 ## Известные ограничения
 
@@ -211,3 +220,49 @@ CLI — он не станет конфликтовать с этими файл
 - JS-бандл фронтенда ~530 КБ (до gzip) — для этого объёма экрана и
   компонентов это некритично, но при росте числа страниц стоит
   рассмотреть code-splitting по маршрутам.
+
+## Спецификации чертежей (`specs/`)
+
+Спецификации разъёмов и пинов по чертежам жгутов. Каждый чертёж привязан
+к модели автомобиля. В проекты системы их переносит
+[Spec Import Agent](apps/spec-import-agent/README.md):
+
+```bash
+cd apps/spec-import-agent && npm install
+node agent.js            # отчёт: что будет создано/изменено
+node agent.js --apply    # записать в базу через API
+```
+
+### Реестр чертежей
+
+| № чертежа | Марка | Модель | Листов | Спецификация | Статус |
+|---|---|---|---|---|---|
+| 1 | Lada | Niva Legend | 1 | [Wiring_1](specs/Wiring_1/Wiring_1_spec.md) | ✅ готово |
+| 2 | Lada | Vesta NG | 5 | [Wiring_2](specs/Wiring_2/Wiring_2_spec.md) | ✅ готово |
+| 3 | Lada | Iskra | 4 | [Wiring_3](specs/Wiring_3/Wiring_3_spec.md) | ✅ готово |
+| 4 | Lada | Granta SD LB SW | 3 | [Wiring_4](specs/Wiring_4/Wiring_4_spec.md) | ✅ готово |
+| 5 | Lada | Niva Travel (2020-2023 Classic) | 2 | [Wiring_5](specs/Wiring_5/Wiring_5_spec.md) | ✅ готово |
+| 6 | Volkswagen | Polo V SD 2010-2020 (1) | 2 | [Wiring_6](specs/Wiring_6/Wiring_6_spec.md) | ✅ готово |
+| 7 | Chevrolet | Niva | 2 | [Wiring_7](specs/Wiring_7/Wiring_7_spec.md) | ✅ готово |
+| 8 | Lada | Granta Universal | 2 | [Wiring_8](specs/Wiring_8/Wiring_8_spec.md) | ✅ готово |
+| 9 | Lada | Largus 2012-2021 | 2 | [Wiring_9](specs/Wiring_9/Wiring_9_spec.md) | ✅ готово |
+| 10 | Lada | Largus 2021- | 4 | [Wiring_10](specs/Wiring_10/Wiring_10_spec.md) | ✅ готово |
+| 11 | Lada | Legend 1993-2021 | 2 | [Wiring_11](specs/Wiring_11/Wiring_11_spec.md) | ✅ готово |
+| 12 | Lada | Niva Travel 2021 Luxe | 5 | [Wiring_12](specs/Wiring_12/Wiring_12_spec.md) | ✅ готово |
+
+Машиночитаемая версия реестра: [`drawings_registry.csv`](drawings_registry.csv).
+Сводка по всем чертежам (потребность по моделям, каталог, вся распиновка, все замечания):
+[`specs/Summary_all_drawings.xlsx`](specs/Summary_all_drawings.xlsx).
+
+### Структура папки specs/
+
+`specs/Wiring_N/`:
+- `Wiring_N[-k]_source.pdf` — исходные листы чертежа;
+- `Wiring_N_spec.xlsx` — листы «Чертёж», «Разъёмы», «Распиновка», «BOM», «Замечания», «Каталог». В каждой строке есть «№ чертежа» и «Автомобиль»;
+- `Wiring_N_spec.md` — то же в markdown.
+
+`tools/data.py` — данные, считанные с чертежей, и каталог номеров. `tools/build_specs.py` — генератор:
+
+```bash
+python3 tools/build_specs.py
+```

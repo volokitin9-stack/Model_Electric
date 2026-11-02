@@ -6,5 +6,8 @@ apps/server/prisma/dev.db-journal
 apps/server/.env
 apps/web/.env
 apps/local-import-agent
+apps/spec-import-agent
+specs
+tools
 .git
 *.log
