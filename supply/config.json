@@ -1,0 +1,13 @@
+{
+  "me_names": ["我", "Me", "Я"],
+  "timezone_note": "Даты в выгрузках WeChat считаются локальным временем",
+  "thresholds_days": {
+    "supplier_silent": 2,
+    "we_owe_reply": 1,
+    "paid_not_shipped": 7,
+    "invoice_not_paid": 3,
+    "shipped_not_delivered": 20,
+    "no_activity": 5
+  },
+  "remind_repeat_days": 2
+}

@@ -35,3 +35,8 @@
 ```bash
 python3 tools/build_specs.py
 ```
+
+## Поставки
+
+Статусы переговоров и поставок по переписке с поставщиками в WeChat: [`supply/STATUS.md`](supply/STATUS.md),
+описание агента — [`supply/README.md`](supply/README.md).

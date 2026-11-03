@@ -1,0 +1,3 @@
+order_id,supplier_id,pn,qty,pay_status,ship_status,tracking,waiting_on,last_in,last_out,last_event,updated,next_step,notes
+PO-2026-014,KLS,L-KLS1-4.20-2X08-MH,2000,,,,,,,,2026-10-20 10:00,,
+PO-2026-014,KLS,L-KLS1-4.20-FT,32000,,,,,,,,2026-10-20 10:00,,
