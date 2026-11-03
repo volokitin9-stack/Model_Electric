@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../db.js";
 import { diffProjectChanges } from "../changelog.js";
 import {
@@ -40,8 +41,16 @@ const processShape = Object.fromEntries(
   PROCESS_FIELDS.map((f) => [f, processFieldSchema(f)]),
 ) as Record<(typeof PROCESS_FIELDS)[number], ReturnType<typeof processFieldSchema>>;
 
+// Продажи (Ozon, 28 дней) — пишет только агент свода цен через PATCH,
+// в форму создания/редактирования проекта не выведены.
+const salesShape = {
+  salesQty28d: z.coerce.number().int().nonnegative().nullable().optional(),
+  salesSumRub: z.coerce.number().nonnegative().nullable().optional(),
+  salesAvgPriceRub: z.coerce.number().nonnegative().nullable().optional(),
+};
+
 const createSchema = z.object({ ...baseShape, ...processShape });
-const updateSchema = z.object({ ...baseShape, ...processShape }).partial();
+const updateSchema = z.object({ ...baseShape, ...processShape, ...salesShape }).partial();
 
 function serialize(project: Record<string, any>) {
   return {
@@ -117,6 +126,15 @@ projectsRouter.patch("/:id", async (req, res) => {
     const normalized = data.plannedDate ? new Date(data.plannedDate) : null;
     updatePayload.plannedDate = normalized;
     diffInput.plannedDate = normalized;
+  }
+  if ("salesSumRub" in data) {
+    updatePayload.salesSumRub = data.salesSumRub != null ? new Prisma.Decimal(data.salesSumRub) : null;
+  }
+  if ("salesAvgPriceRub" in data) {
+    updatePayload.salesAvgPriceRub = data.salesAvgPriceRub != null ? new Prisma.Decimal(data.salesAvgPriceRub) : null;
+  }
+  if ("salesQty28d" in data || "salesSumRub" in data || "salesAvgPriceRub" in data) {
+    updatePayload.salesUpdatedAt = new Date();
   }
 
   const changeEntries = diffProjectChanges(existing as unknown as Record<string, unknown>, diffInput);

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "./db.js";
 import { COMPONENT_STATUS_RESOLVED } from "./statuses.js";
+import { rubEquivalent } from "./exchangeRates.js";
 
 const D = Prisma.Decimal;
 export type Decimal = InstanceType<typeof D>;
@@ -79,10 +80,28 @@ export function summarizeCost(items: ProjectComponentWithCost[]) {
     }
   }
 
+  // Рублёвый эквивалент — отдельное явное поле, а не замена
+  // totalsByCurrency: считается только по валютам, для которых известен
+  // курс (см. exchangeRates.ts); если какая-то валюта без курса —
+  // isRubPartial=true, и UI обязан показать это, а не выдать неполную
+  // сумму за итоговую себестоимость.
+  let totalRub: Decimal | null = null;
+  let isRubPartial = false;
+  for (const [currency, amount] of totalsByCurrency) {
+    const conv = rubEquivalent(amount, currency);
+    if (conv) {
+      totalRub = (totalRub ?? new D(0)).plus(conv.amountRub);
+    } else {
+      isRubPartial = true;
+    }
+  }
+
   return {
     totalsByCurrency: Object.fromEntries(
       Array.from(totalsByCurrency.entries()).map(([c, v]) => [c, v.toFixed(2)]),
     ),
+    totalRub: totalRub != null ? totalRub.toFixed(2) : null,
+    isRubPartial,
     isPartial: missingCount > 0,
     isMixedCurrency: totalsByCurrency.size > 1,
     pricedCount,

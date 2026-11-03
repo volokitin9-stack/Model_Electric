@@ -6,12 +6,20 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import type { Project } from "@/lib/types";
 
+function fmtNum(n: number): string {
+  return new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 }).format(n);
+}
+
 function formatCostSummary(summary: Awaited<ReturnType<typeof api.projectSummary>>["costSummary"]): string {
   const entries = Object.entries(summary.totalsByCurrency);
   if (entries.length === 0) return "цена не определена";
-  const text = entries.map(([cur, amount]) => `${amount} ${cur}`).join(" + ");
-  if (summary.isPartial) return `${text} (частичная стоимость)`;
-  return text;
+  const native = entries.map(([cur, amount]) => `${amount} ${cur}`).join(" + ");
+  const partial = summary.isPartial ? " (частично)" : "";
+  if (summary.totalRub != null) {
+    const rubPartial = summary.isRubPartial ? "; часть без курса в ₽" : "";
+    return `≈ ${fmtNum(Number(summary.totalRub))} ₽${partial} (${native}${rubPartial})`;
+  }
+  return `${native}${partial} — курс в ₽ неизвестен`;
 }
 
 export function ProjectOverviewTab({ project, onViewComponents }: { project: Project; onViewComponents: () => void }) {
@@ -23,13 +31,25 @@ export function ProjectOverviewTab({ project, onViewComponents }: { project: Pro
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
         <KpiTile label="Прогресс" value={`${project.progress}%`} />
         <KpiTile label="Заполненность спецификации" value={summary ? `${summary.specFillPercent}%` : "…"} />
         <KpiTile label="Стоимость комплектующих" value={summary ? formatCostSummary(summary.costSummary) : "…"} isText />
         <KpiTile label="Поставщиков" value={summary?.supplierCount ?? "…"} />
         <KpiTile label="Не определено" value={summary?.missingCount ?? "…"} warn={(summary?.missingCount ?? 0) > 0} />
+        <KpiTile
+          label="Продажи Ozon, шт/28 дн"
+          value={project.salesQty28d != null ? fmtNum(project.salesQty28d) : "нет данных"}
+          isText={project.salesQty28d == null}
+        />
       </div>
+      {project.salesQty28d != null && (
+        <p className="-mt-2 text-xs text-muted-foreground">
+          На сумму {fmtNum(Number(project.salesSumRub))} ₽, средняя цена продажи{" "}
+          {project.salesAvgPriceRub ? fmtNum(Number(project.salesAvgPriceRub)) : "—"} ₽. Период источника — 28 дней
+          (отчёт Ozon), не календарный месяц.
+        </p>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
         <div className="flex flex-col gap-4">

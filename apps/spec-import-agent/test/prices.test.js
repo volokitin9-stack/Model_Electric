@@ -78,6 +78,27 @@ test("статусы и правка позиции: человека не пе�
   assert.deepEqual(manual, {});
 });
 
+test("diffProjectLine: несовпадение артикула дописывается к чужому комментарию, не теряется", () => {
+  const mismatch = {
+    main: true,
+    variant: "комплект",
+    best: { supplier: "HD", article: "A", price: 1.5 },
+    check: "нет в чертеже",
+    issue: "артикул не совпадает с чертежом",
+  };
+  const row = { primaryOfferId: "y", plannedPrice: "2", comment: "Чертёж №6: 6-1" };
+  const patch = diffProjectLine(row, mismatch, "x1");
+  assert.ok(patch.comment.startsWith("Чертёж №6: 6-1"));
+  assert.match(patch.comment, /Свод цен: артикул не совпадает с чертежом/);
+  // primaryOfferId и plannedPrice уже заданы человеком/этапом чертежей — не трогаем
+  assert.equal(patch.primaryOfferId, undefined);
+  assert.equal(patch.plannedPrice, undefined);
+
+  // повторный прогон с тем же issue — без изменений (идемпотентно)
+  const already = { ...row, comment: patch.comment };
+  assert.deepEqual(diffProjectLine(already, mismatch, "x1"), {});
+});
+
 test("uniqueLines: основной вариант важнее альтернативы, samePrice учитывает MOQ", () => {
   const lines = uniqueLines([
     { oem: "3C0 972 733", main: false },

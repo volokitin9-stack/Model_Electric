@@ -110,7 +110,15 @@ export function diffProjectLine(row, line, offerId) {
     patch.plannedCurrency = "CNY";
   }
   const comment = lineComment(line);
-  if ((!row.comment || row.comment.startsWith(PRICE_COMMENT_PREFIX)) && row.comment !== comment) patch.comment = comment;
+  if ((!row.comment || row.comment.startsWith(PRICE_COMMENT_PREFIX)) && row.comment !== comment) {
+    patch.comment = comment;
+  } else if (line.issue && row.comment && !row.comment.includes(line.issue)) {
+    // Комментарий уже занят чужим текстом (например, этапом чертежей) —
+    // не затираем его, но несовпадение артикула чертёж↔свод цен — не
+    // та информация, которую можно молча потерять, поэтому дописываем
+    // отдельной строкой поверх существующего комментария.
+    patch.comment = `${row.comment} | ${PRICE_COMMENT_PREFIX} ${line.issue}`;
+  }
   return patch;
 }
 

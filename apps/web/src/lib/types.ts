@@ -11,6 +11,12 @@ export type Project = {
   updatedAt: string;
   progress: number;
   nextAction: string;
+  // Продажи Ozon (этап «Свод цен» агента) — период источника: 28 дней,
+  // не календарный месяц, см. комментарий в schema.prisma.
+  salesQty28d: number | null;
+  salesSumRub: string | null;
+  salesAvgPriceRub: string | null;
+  salesUpdatedAt: string | null;
 } & Record<ProcessField, string>;
 
 export type ProjectInput = Partial<
@@ -86,6 +92,9 @@ export type Supplier = {
   pricedArticleCount?: number;
   lastImportAt?: string | null;
   lastPriceChangeAt?: string | null;
+  // Рейтинг 1-3 по числу кроссировок относительно других поставщиков,
+  // 1 = верхняя треть (больше всего разъёмов) — см. apps/server/src/routes/suppliers.ts.
+  connectorRank?: 1 | 2 | 3 | null;
 };
 
 export type SupplierDetail = Supplier & {
@@ -239,6 +248,8 @@ export type ProjectSummary = {
   specFillPercent: number;
   costSummary: {
     totalsByCurrency: Record<string, string>;
+    totalRub: string | null;
+    isRubPartial: boolean;
     isPartial: boolean;
     isMixedCurrency: boolean;
     pricedCount: number;
@@ -328,6 +339,7 @@ export type SpecImportReport = {
     suppliersCreated?: number;
     offersCreated?: number;
     pricesUpdated?: number;
+    salesUpdated?: number;
   };
   prices?: Array<{
     key: string;

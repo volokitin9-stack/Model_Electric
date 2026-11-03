@@ -72,7 +72,12 @@ export function ProjectComponentsTab({ projectId }: { projectId: string }) {
             {rows.map((pc) => {
               const offers = offersFor(pc.componentId);
               return (
-                <tr key={pc.id} className="border-b border-border align-top">
+                <tr
+                  key={pc.id}
+                  className={`border-b border-border align-top ${
+                    pc.status === "needs_review" ? "bg-[var(--status-problem-bg)]" : ""
+                  }`}
+                >
                   <td className="px-3 py-2 font-medium">{pc.component.internalArticle}</td>
                   <td className="px-3 py-2">{pc.component.name}</td>
                   <td className="px-3 py-2">

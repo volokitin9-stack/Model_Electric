@@ -190,7 +190,7 @@ async function main() {
   const report = { startedAt: new Date().toISOString(), apply: args.apply, server: config.serverUrl, drawings: [] };
   const totals = {
     drawings: 0, projectsCreated: 0, catalogCreated: 0, catalogFilled: 0, added: 0, updated: 0, extra: 0, removed: 0, errors: 0,
-    suppliersCreated: 0, offersCreated: 0, pricesUpdated: 0,
+    suppliersCreated: 0, offersCreated: 0, pricesUpdated: 0, salesUpdated: 0,
   };
   const catalogPlanned = new Set(); // в режиме отчёта не считать одно и то же новое комплектующее дважды
 
@@ -330,7 +330,7 @@ async function main() {
       `позиций спецификации +${totals.added} / изменено ${totals.updated} / удалено ${totals.removed} / лишних ${totals.extra}, ` +
       `чертежей загружено/обновлено ${totals.drawings}, ` +
       `свод цен: поставщиков +${totals.suppliersCreated}, кроссировок +${totals.offersCreated}, ` +
-      `цен обновлено ${totals.pricesUpdated}, ошибок ${totals.errors}`,
+      `цен обновлено ${totals.pricesUpdated}, продаж обновлено ${totals.salesUpdated}, ошибок ${totals.errors}`,
   );
   if (!args.apply) console.log("Ничего не записано. Для применения: node agent.js --apply");
   if (args.reportPath) {
@@ -496,11 +496,33 @@ async function runPriceStage(api, args, config, report, totals) {
       }
       r.project = { id: project.id, name: project.name, article: project.article };
       if (entry.kitRub != null) plog(`разъёмы на комплект: ${entry.kitCny} CNY ≈ ${entry.kitRub} ₽ (курс ${data.rate} × ${data.coef})`);
-      if (entry.sales?.qty) plog(`продажи Ozon: ${entry.sales.qty} шт на ${entry.sales.sum} ₽, ср. цена ${Math.round(entry.sales.avg)} ₽`);
+      const isReal = !String(project.id).startsWith("planned:");
+      if (entry.sales?.qty) {
+        plog(`продажи Ozon: ${entry.sales.qty} шт/28дн на ${entry.sales.sum} ₽, ср. цена ${Math.round(entry.sales.avg)} ₽`);
+        const avgRub = Math.round(entry.sales.avg);
+        const sameSales =
+          isReal &&
+          Number(project.salesQty28d) === entry.sales.qty &&
+          Number(project.salesSumRub) === entry.sales.sum &&
+          Number(project.salesAvgPriceRub) === avgRub;
+        if (isReal && !sameSales) {
+          plog(`продажи: записать в проект (${project.salesQty28d != null ? "обновление" : "впервые"})`);
+          totals.salesUpdated++;
+          if (args.apply) {
+            const updated = await api.patch(`/api/projects/${project.id}`, {
+              salesQty28d: entry.sales.qty,
+              salesSumRub: entry.sales.sum,
+              salesAvgPriceRub: avgRub,
+            });
+            project.salesQty28d = updated.salesQty28d;
+            project.salesSumRub = updated.salesSumRub;
+            project.salesAvgPriceRub = updated.salesAvgPriceRub;
+          }
+        }
+      }
       if (entry.missing) plog(`⚠ ${entry.missing}`);
       if (entry.note) plog(`примечание: ${entry.note}`);
 
-      const isReal = !String(project.id).startsWith("planned:");
       const current = isReal ? await api.get(`/api/projects/${project.id}/components`) : [];
       const done = touched.get(project.id) ?? new Set();
       touched.set(project.id, done);

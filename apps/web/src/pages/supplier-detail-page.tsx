@@ -9,6 +9,7 @@ import { PriceEditDialog } from "@/components/price-edit-dialog";
 import { SupplierFormDialog } from "@/components/supplier-form-dialog";
 import { ImportWizardDialog } from "@/components/import-wizard-dialog";
 import { ExportWizardDialog } from "@/components/export-wizard-dialog";
+import { SupplierRankBadge } from "@/components/supplier-rank-badge";
 import { api } from "@/lib/api";
 import type { CrossReference } from "@/lib/types";
 
@@ -56,9 +57,12 @@ export function SupplierDetailPage() {
           </Button>
         </Link>
         <div className="flex flex-col">
-          <h1 className="text-lg font-semibold">
-            {s.code} — {s.name}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold">
+              {s.code} — {s.name}
+            </h1>
+            {s.connectorRank != null && <SupplierRankBadge rank={s.connectorRank} />}
+          </div>
           <span className="text-xs text-muted-foreground">{s.country || "Страна не указана"}</span>
         </div>
         <div className="ml-auto flex flex-wrap gap-2">

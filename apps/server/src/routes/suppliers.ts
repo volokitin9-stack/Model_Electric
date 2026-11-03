@@ -4,6 +4,27 @@ import { prisma } from "../db.js";
 
 export const suppliersRouter = Router();
 
+/**
+ * Рейтинг 1–3 по числу кроссировок (разъёмов, которые поставщик может
+ * поставить) — относительное место среди текущих поставщиков: 1 = верхняя
+ * треть (больше всего разъёмов), 3 = нижняя. Пересчитывается на каждый
+ * запрос, не хранится отдельно.
+ */
+async function computeConnectorRanks(): Promise<Map<string, 1 | 2 | 3>> {
+  const [allSuppliers, counts] = await Promise.all([
+    prisma.supplier.findMany({ select: { id: true } }),
+    prisma.supplierCrossReference.groupBy({ by: ["supplierId"], _count: { _all: true } }),
+  ]);
+  const countById = new Map(counts.map((c) => [c.supplierId, c._count._all]));
+  const n = allSuppliers.length;
+  const sorted = [...allSuppliers].sort((a, b) => (countById.get(b.id) ?? 0) - (countById.get(a.id) ?? 0));
+  const tier1End = Math.ceil(n / 3);
+  const tier2End = Math.ceil((2 * n) / 3);
+  const rankById = new Map<string, 1 | 2 | 3>();
+  sorted.forEach((s, i) => rankById.set(s.id, i < tier1End ? 1 : i < tier2End ? 2 : 3));
+  return rankById;
+}
+
 const supplierSchema = z.object({
   code: z.string().trim().min(1).max(40),
   name: z.string().trim().min(1).max(200),
@@ -46,7 +67,9 @@ suppliersRouter.get("/", async (_req, res) => {
       };
     }),
   );
-  res.json(withStats);
+
+  const rankById = await computeConnectorRanks();
+  res.json(withStats.map((s) => ({ ...s, connectorRank: rankById.get(s.id) ?? null })));
 });
 
 suppliersRouter.get("/:id", async (req, res) => {
@@ -79,7 +102,8 @@ suppliersRouter.get("/:id", async (req, res) => {
       })
     : [];
 
-  res.json({ ...supplier, crossReferences, importProfiles, importBatches, exportHistory, projects });
+  const rankById = await computeConnectorRanks();
+  res.json({ ...supplier, connectorRank: rankById.get(supplier.id) ?? null, crossReferences, importProfiles, importBatches, exportHistory, projects });
 });
 
 suppliersRouter.post("/", async (req, res) => {

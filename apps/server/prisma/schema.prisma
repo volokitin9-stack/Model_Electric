@@ -37,6 +37,14 @@ model Project {
 
   plannedDate DateTime?
 
+  // Продажи по данным Ozon (свод цен поставщиков, этап "prices" агента) —
+  // период источника фиксированный: отчёт Ozon "за 28 дней", не настоящий
+  // календарный месяц, поэтому храним как есть и подписываем в UI честно.
+  salesQty28d      Int?
+  salesSumRub      Decimal?
+  salesAvgPriceRub Decimal?
+  salesUpdatedAt   DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

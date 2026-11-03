@@ -126,7 +126,9 @@ export const STATUS_TONE: Record<string, StatusTone> = {
   not_defined: "neutral",
   searching: "progress",
   selected: "waiting",
-  needs_review: "waiting",
+  // Красный, не жёлтый: несовпадение артикула чертёж↔свод цен —
+  // требует явного внимания, а не просто "в очереди".
+  needs_review: "problem",
   confirmed: "done",
   // статусы кроссировки
   discontinued: "cancelled",

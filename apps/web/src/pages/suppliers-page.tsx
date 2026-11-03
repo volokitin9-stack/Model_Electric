@@ -9,6 +9,7 @@ import { PriceEditDialog } from "@/components/price-edit-dialog";
 import { SupplierFormDialog } from "@/components/supplier-form-dialog";
 import { ImportWizardDialog } from "@/components/import-wizard-dialog";
 import { ExportWizardDialog } from "@/components/export-wizard-dialog";
+import { SupplierRankBadge } from "@/components/supplier-rank-badge";
 import { api } from "@/lib/api";
 import type { CrossReference } from "@/lib/types";
 
@@ -119,13 +120,18 @@ export function SuppliersPage() {
               <Link
                 key={s.id}
                 to={`/suppliers/${s.id}`}
-                className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
+                className={`flex flex-col gap-2 rounded-lg border bg-card p-4 transition-colors hover:border-primary/50 ${
+                  s.connectorRank === 1 ? "border-[var(--status-done-fg)] ring-1 ring-[var(--status-done-fg)]" : "border-border"
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{s.name}</span>
                   <span className="text-xs text-muted-foreground">{s.code}</span>
                 </div>
-                <div className="text-xs text-muted-foreground">{s.country || "Страна не указана"}</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">{s.country || "Страна не указана"}</span>
+                  {s.connectorRank != null && <SupplierRankBadge rank={s.connectorRank} />}
+                </div>
                 <div className="mt-1 flex items-center justify-between text-xs">
                   <span>{s.crossReferenceCount ?? 0} кроссировок</span>
                   <span>{s.pricedArticleCount ?? 0} с ценой</span>
