@@ -30,43 +30,61 @@ SUPPLIERS = ["Ylcn", "HD Connector", "JINGMING", "Star technology", "Jiangsu Xin
 MALE_OEM, FEMALE_OEM = "C", "AK"
 MALE_START, FEMALE_START = ci("E"), ci("AM")  # по 4 колонки на поставщика: артикул, MOQ, цена, итого
 GREEN = "FF92D050"
-# Проекты, где в своде цен есть не все разъёмы чертежа
-PARTIAL = {22: "в своде нет 2-поз. Yazaki 7282/7283-8851-30", 17: "AMP 1-929592-1 без ответной части и цены"}
-ALT_LABEL = {17: "доп. разъём (уточнить)", 37: "альтернатива"}
+# Предварительное решение (готово, но требует подтверждения)
+PRELIM = {17: "AMP 1-929592-1: ответная часть не найдена, предварительно разъёмы как у Largus 2012-2021"}
+
+# Артикулы свода, близкие к чертежу, но не совпадающие: нормализованный OEM -> пояснение
+NEAR = {
+    "1749221": "в чертеже №2 174922-2: суффикс -1/-2 — другой тип (кодировка) корпуса, проверить",
+    "1749291": "в чертеже №2 174929-2: суффикс -1/-2 — другой тип (кодировка) корпуса, проверить",
+    "5G0972715": "в чертеже №6 5K0972715: другой номер VAG (5G0 vs 5K0), проверить совместимость",
+}
 
 # Блоки свода цен: основная строка -> доп. строка (второй разъём комплекта), имя блока
 PRICE_BLOCKS = {4: 5, 6: 7, 8: 9}
 
-# Строки «Плана разработок» -> (№ чертежей, строки свода цен для себестоимости, альтернативные строки, замечание)
+# Строки «Плана разработок» -> (№ чертежей, варианты комплекта, замечание).
+# Вариант: (название, [строка блока свода | (строка блока, строка разъёма)]). Первый вариант — основной,
+# по нему считается себестоимость; остальные — альтернативы.
+KIT = "комплект"
+GRANTA_TE = "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)"
+GRANTA_VAG = "Вариант 2: по своду 3C0 972 733 / 1J0 972 926"
+GRANTA_NOTE = ("Два варианта разъёмов: чертёж — TE 1-929621-1 / 1-929627-1 (= 19296211 / 19296271, цены из строки "
+               "Chevrolet Niva), свод — 3C0 972 733 / 1J0 972 926. Какой верный — подтвердить")
 PLAN_MAP = {
-    5: ([4], [16], [], "Не согласовано; разъёмы как у Granta"),
-    7: ([5], [14], [], "Не согласовано; уточнить исполнение Niva Travel"),
-    9: ([2], [8], [], "Не согласовано; разъёмы как у Vesta NG"),
-    12: ([5], [14], [], "Чертёж №5: 191972716 / 1J0972706"),
-    13: ([12], [21], [], "Чертёж №12 на TE 1-929627-1 = 19296271 (строка свода Chevrolet Niva), а не 191972716"),
-    14: ([11], [18], [], "Чертёж №11: колодки 2105-3724341"),
-    15: ([1], [17], [], "Чертёж №1: 928522-1"),
-    16: ([9], [19], [], ""),
-    17: ([10], [19], [12], "Доп. разъём AMP 1-929592-1: ответная часть не найдена, цен нет"),
-    18: ([4], [16], [], "Артикулы свода (3C0 972 733 / 1J0 972 926) не совпадают с чертежом (TE 1-929621-1 / 1-929627-1)"),
-    19: ([8], [16], [], "Артикулы свода (3C0 972 733 / 1J0 972 926) не совпадают с чертежом №8 (TE 1-929627-1 / 1-929621-1)"),
-    20: ([4], [16], [], "Артикулы свода (3C0 972 733 / 1J0 972 926) не совпадают с чертежом (TE 1-929621-1 / 1-929627-1)"),
-    21: ([2], [8], [], "Свод: 174922-1 / 174929-1, чертёж: 174922-2 / 174929-2 (другой ключ корпуса)"),
-    22: ([3], [20], [], "2-поз. Yazaki 7282/7283-8851-30 из чертежа в своде цен отсутствует"),
-    23: ([7], [21], [], "19296271 / 19296211 = TE 1-929627-1 / 1-929621-1"),
-    29: ([], [4], [], ""),
-    30: ([], [6], [], ""),
-    31: ([], [22], [], ""),
-    33: ([], [10], [], "Female в своде цен не указан"),
-    34: ([], [11], [], ""),
-    37: ([], [15], [19], "Альтернатива: Molex 98821/98825-1061 (строка Largus/Logan 2)"),
-    39: ([6], [13], [], "Свод: male 5G0972715, чертёж №6: 5K0972715"),
+    5: ([4], [(GRANTA_TE, [21]), (GRANTA_VAG, [16])], "Не согласовано. " + GRANTA_NOTE),
+    7: ([5], [(KIT, [14])], "Не согласовано; уточнить исполнение Niva Travel"),
+    9: ([2], [(KIT, [8])], "Не согласовано; разъёмы как у Vesta NG"),
+    12: ([5], [(KIT, [14])], "Чертёж №5: 191972716 / 1J0972706"),
+    13: ([12], [(KIT, [21])], "Чертёж №12 на TE 1-929627-1 = 19296271 (строка свода Chevrolet Niva), а не 191972716"),
+    14: ([11], [(KIT, [18])], "Чертёж №11: колодки 2105-3724341"),
+    15: ([1], [(KIT, [17])], "Чертёж №1: 928522-1"),
+    16: ([9], [(KIT, [19])], ""),
+    17: ([10], [(KIT, [19])], "AMP 1-929592-1 (свод, стр. 12): ответная часть не подобрана. Предварительно разъёмы "
+                              "одинаковые с Largus 2012-2021 — взяты Molex 98821/98825-1061 (стр. 19), подтвердить"),
+    18: ([4], [(GRANTA_TE, [21]), (GRANTA_VAG, [16])], GRANTA_NOTE),
+    19: ([8], [(GRANTA_TE, [21]), (GRANTA_VAG, [16])], GRANTA_NOTE),
+    20: ([4], [(GRANTA_TE, [21]), (GRANTA_VAG, [16])], GRANTA_NOTE),
+    21: ([2], [(KIT, [8])], "ВНИМАНИЕ: свод 174922-1 / 174929-1, чертёж 174922-2 / 174929-2 — "
+                            "суффикс -1/-2 означает другой тип (кодировку) корпуса, проверить"),
+    22: ([3], [(KIT, [20, (4, 5)])], "2-поз. Yazaki 7282/7283-8851-30 взят из блока Haval Dargo (свод, стр. 5)"),
+    23: ([7], [(KIT, [21])], "19296271 / 19296211 = TE 1-929627-1 / 1-929621-1"),
+    29: ([], [(KIT, [4])], ""),
+    30: ([], [(KIT, [6])], ""),
+    31: ([], [(KIT, [22])], ""),
+    33: ([], [(KIT, [10])], "Female в своде цен не указан"),
+    34: ([], [(KIT, [11])], ""),
+    37: ([], [(KIT, [15]), ("альтернатива: Molex 98821/98825-1061", [19])],
+         "Альтернатива: Molex 98821/98825-1061 (строка Largus/Logan 2)"),
+    39: ([6], [(KIT, [13])], "ВНИМАНИЕ: свод male 5G0972715, чертёж №6 5K0972715 — другой номер VAG, "
+                             "проверить совместимость"),
 }
 
 HDR = PatternFill("solid", fgColor="1F4E78")
 OKF = PatternFill("solid", fgColor="E2EFDA")
 WARN = PatternFill("solid", fgColor="FFF2CC")
 BAD = PatternFill("solid", fgColor="F8CBAD")
+ALTF = PatternFill("solid", fgColor="DDEBF7")
 thin = Side(style="thin", color="999999")
 BORDER = Border(left=thin, right=thin, top=thin, bottom=thin)
 
@@ -199,18 +217,26 @@ def main():
     up_rows, up_fill, proj_rows, proj_fill, remarks = [], [], [], [], []
     uid = 0
     for p in plan:
-        drawings, kit_rows, alt_rows, note = PLAN_MAP.get(p["row"], ([], [], [], ""))
+        drawings, variants, note = PLAN_MAP.get(p["row"], ([], [], ""))
         car = f"{p['brand']} {p['model']} {p['gen'] or ''}".strip()
         kit_cny, n_lines, n_noprice, n_mismatch = 0.0, 0, 0, 0
-        for variant, rows_ in (("комплект", kit_rows), (ALT_LABEL.get(p["row"], "альтернатива"), alt_rows)):
-            for br in rows_:
+        alt_costs = []
+        for vi, (variant, entries) in enumerate(variants):
+            main_v = vi == 0
+            v_cny, v_ok = 0.0, True
+            for ent in entries:
+                br, only = (ent if isinstance(ent, tuple) else (ent, None))
                 blk = blocks[br]
                 for ln in blk["lines"]:
+                    if only is not None and ln["row"] != only:
+                        continue
                     uid += 1
                     best = best_offer(ln["offers"])
+                    near = NEAR.get(norm(ln["oem"])) if ln["oem"] else None
                     if drawings and ln["oem"]:
                         hit = [d for d in drawings if norm(ln["oem"]) in dpn.get(d, set())]
-                        check = f"есть в чертеже №{hit[0]}" if hit else "нет в чертеже"
+                        check = f"есть в чертеже №{hit[0]}" if hit else ("отличается от чертежа" if near
+                                                                       else "нет в чертеже")
                     elif drawings:
                         check = "OEM не указан"
                     else:
@@ -226,21 +252,31 @@ def main():
                         issues.append("нет цены")
                     elif best["note"]:
                         issues.append(f"лучшая цена: {best['note']}")
-                    if check == "нет в чертеже":
-                        issues.append("артикул не совпадает с чертежом")
+                    if near:
+                        issues.append(near)
+                    elif check == "нет в чертеже":
+                        issues.append("артикул не совпадает с чертежом" + ("" if main_v else " (альтернативный вариант)"))
+                    if br == 4 and only == 5:
+                        issues.append("разъём взят из блока Haval Dargo")
                     if not best:
                         status = "Нет цены"
-                    elif issues:
+                    elif issues and not (not main_v and check == "нет в чертеже" and len(issues) == 1):
                         status = "Проверить"
+                    elif not main_v:
+                        status = "Альтернатива"
                     else:
                         status = "OK" if check.startswith("есть") else "Нет чертежа"
-                    if variant == "комплект":
+                    if br == 4 and only == 5 and best and status == "Проверить" and len(issues) == 1:
+                        status = "OK"
+                    if best:
+                        v_cny += line_cny
+                    else:
+                        v_ok = False
+                    if main_v:
                         n_lines += 1
-                        if best:
-                            kit_cny += line_cny
-                        else:
+                        if not best:
                             n_noprice += 1
-                        if check == "нет в чертеже":
+                        if check in ("нет в чертеже", "отличается от чертежа"):
                             n_mismatch += 1
                     up_rows.append([
                         uid, p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
@@ -250,7 +286,12 @@ def main():
                         best["price"] if best else None, line_cny, round(line_cny * k, 2) if best else None,
                         len([o for o in ln["offers"] if o["price"] is not None]), alts or None, status,
                         "; ".join(issues) or None])
-                    up_fill.append({"OK": OKF, "Нет цены": BAD}.get(status, WARN))
+                    up_fill.append({"OK": OKF, "Нет цены": BAD, "Альтернатива": ALTF}.get(status, WARN))
+            if main_v:
+                kit_cny = v_cny
+            else:
+                alt_costs.append(f"{variant}: {round(v_cny * k, 2)} ₽" + ("" if v_ok else " (не все цены)"))
+        kit_rows = [e[0] if isinstance(e, tuple) else e for e in (variants[0][1] if variants else [])]
         bt = blocks[kit_rows[0]]["bt"] if kit_rows else None
         kit_rub = round(kit_cny * k, 2) if n_lines and n_noprice < n_lines else None
         missing = []
@@ -262,14 +303,17 @@ def main():
             missing.append("нет цен разъёмов")
         elif n_noprice:
             missing.append(f"без цены: {n_noprice} поз.")
-        if p["row"] in PARTIAL:
-            missing.append(PARTIAL[p["row"]])
+        if p["row"] in PRELIM:
+            missing.append("предварительно: " + PRELIM[p["row"]])
         if n_mismatch:
             missing.append(f"артикулы не совпадают с чертежом: {n_mismatch} поз.")
+        if len(variants) > 1:
+            missing.append("выбрать вариант разъёмов")
         if not p["approved"]:
             ready = "Не в работе"
-        elif drawings and kit_rows and not n_noprice and not n_mismatch and p["row"] not in PARTIAL:
-            ready = "Готов к загрузке"
+        elif drawings and kit_rows and not n_noprice and not n_mismatch:
+            ready = ("Готов (предварительно)" if p["row"] in PRELIM
+                     else "Готов (2 варианта)" if len(variants) > 1 else "Готов к загрузке")
         elif kit_rows or drawings:
             ready = "Частично"
         else:
@@ -277,10 +321,13 @@ def main():
         share = round(kit_rub / p["avg"] * 100, 2) if kit_rub and p["avg"] else None
         proj_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
                           p["qty"], p["sum"], p["avg"], p["kind"], ", ".join(map(str, drawings)) or None,
-                          ", ".join(blocks[r]["name"] for r in kit_rows) or None, n_lines or None,
-                          round(kit_cny, 3) if kit_rub else None, kit_rub, bt, share, ready,
+                          ", ".join(dict.fromkeys(blocks[r]["name"] for r in kit_rows)) or None, n_lines or None,
+                          round(kit_cny, 3) if kit_rub else None, kit_rub, "; ".join(alt_costs) or None, bt, share,
+                          ready,
                           "; ".join(missing) or None, "; ".join(x for x in (note, p["note"]) if x) or None])
-        proj_fill.append({"Готов к загрузке": OKF, "Частично": WARN, "Нет данных": BAD}.get(ready))
+        proj_fill.append({"Готов к загрузке": OKF, "Готов (предварительно)": OKF, "Готов (2 варианта)": OKF,
+                          "Частично": WARN,
+                          "Нет данных": BAD}.get(ready))
         if note:
             remarks.append(["Проект", car, note])
 
@@ -336,9 +383,10 @@ def main():
     write_sheet(wb, "Проекты",
                 ["Группа", "Марка", "Модель", "Поколение", "Согласовано", "Заказано, шт", "Заказано, ₽",
                  "Ср. цена продажи, ₽", "Тип проводки", "№ чертежа", "Блок свода цен", "Позиций разъёмов",
-                 "Разъёмы на комплект, CNY", "Разъёмы на комплект, ₽", "Цена первичный анализ, ₽",
+                 "Разъёмы на комплект, CNY", "Разъёмы на комплект, ₽", "Альтернативный вариант, ₽",
+                 "Цена первичный анализ, ₽",
                  "Доля разъёмов в цене продажи, %", "Готовность", "Чего не хватает", "Комментарий"],
-                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 30, 9, 26, 9, 11, 11, 11, 11, 15, 40, 50], proj_fill)
+                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 30, 9, 26, 9, 11, 11, 40, 11, 11, 15, 40, 50], proj_fill)
     write_sheet(wb, "Цены поставщиков",
                 ["Блок свода цен", "Строка", "Сторона", "Роль", "OEM артикул", "Кол-во на комплект", "Поставщик",
                  "Артикул поставщика", "MOQ", "Цена, CNY", "Сумма на комплект, CNY", "Лучшая", "Замечание"],
