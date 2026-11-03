@@ -6,6 +6,9 @@
  * правила сопоставления были видны и проверялись тестами.
  */
 
+/** Разделитель комментария позиции: «Чертёж №… | Свод цен: …». */
+export const PRICE_TAIL = " | Свод цен:";
+
 /** Копия apps/server/src/normalize.ts — сравнение «тот же артикул, записанный иначе». */
 export function normalizeArticle(raw) {
   return String(raw).trim().toUpperCase().replace(/[\s_]+/g, "-").replace(/-+/g, "-");
@@ -229,8 +232,10 @@ export function diffProjectComponents(existingRows, items) {
     const st = upgradedStatus(row.status, item.status);
     if (st) patch.status = st;
     // комментарий обновляем только если он был записан агентом
-    if ((row.comment == null || row.comment.startsWith("Чертёж №")) && row.comment !== item.projectComment) {
-      patch.comment = item.projectComment;
+    // Хвост « | Свод цен: …» дописывает этап «Свод цен» (agent.js) — сохраняем его при обновлении из чертежа.
+    const [base, ...tail] = (row.comment ?? "").split(PRICE_TAIL);
+    if ((row.comment == null || row.comment.startsWith("Чертёж №")) && base !== item.projectComment) {
+      patch.comment = tail.length ? `${item.projectComment}${PRICE_TAIL}${tail.join(PRICE_TAIL)}` : item.projectComment;
     }
     if (Object.keys(patch).length) update.push({ item, row, patch });
     else unchanged.push(item);

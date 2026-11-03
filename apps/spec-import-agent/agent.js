@@ -31,6 +31,9 @@ import { fileURLToPath } from "node:url";
 import { readSpecFile } from "./lib/readSpec.js";
 import { buildDrawingPlan, diffProjectComponents, matchProject, normalizeArticle } from "./lib/plan.js";
 import {
+  INCLUDED_COMMENT,
+  PRICE_COMMENT_PREFIX,
+  coveredContacts,
   diffProjectLine,
   lineComment,
   lineStatus,
@@ -495,7 +498,12 @@ async function runPriceStage(api, args, config, report, totals) {
         projects.push(project);
       }
       r.project = { id: project.id, name: project.name, article: project.article };
-      if (entry.kitRub != null) plog(`разъёмы на комплект: ${entry.kitCny} CNY ≈ ${entry.kitRub} ₽ (курс ${data.rate} × ${data.coef})`);
+      if (entry.kitRub != null) {
+        plog(
+          `разъёмы на комплект (разъём + пины + допы): ${entry.kitCny} CNY ≈ ${entry.kitRub} ₽ (курс ${data.rate} × ${data.coef})` +
+            (entry.fileKitRub != null && Math.abs(entry.fileKitRub - entry.kitRub) > 0.5 ? `; в своде — ${entry.fileKitRub} ₽` : ""),
+        )
+      }
       if (entry.sales?.qty) plog(`продажи Ozon: ${entry.sales.qty} шт на ${entry.sales.sum} ₽, ср. цена ${Math.round(entry.sales.avg)} ₽`);
       if (entry.missing) plog(`⚠ ${entry.missing}`);
       if (entry.note) plog(`примечание: ${entry.note}`);
@@ -541,6 +549,32 @@ async function runPriceStage(api, args, config, report, totals) {
             totals.updated++;
             if (args.apply) await api.patch(`/api/projects/${project.id}/components/${row.id}`, patch);
           }
+        }
+      }
+      // Пины разъёмов из свода: их цена уже в цене разъёма → плановая цена 0, чтобы стоимость не была «частичной»
+      if (isReal) {
+        const priced = new Set();
+        for (const line of entry.lines) {
+          if (!line.main || !line.best) continue;
+          for (const comp of matchCatalog(catalog, line.oem)) priced.add(oemKey(comp.internalArticle));
+          priced.add(oemKey(line.oem));
+        }
+        const projectDrawings = await api.get(`/api/projects/${project.id}/drawings`);
+        const covered = coveredContacts(projectDrawings.flatMap((d) => d.connectors ?? []), priced);
+        for (const row of current) {
+          const housings = covered.get(oemKey(row.component?.internalArticle));
+          if (!housings || row.primaryOfferId || row.status === "not_required" || done.has(`pin:${row.id}`)) continue;
+          done.add(`pin:${row.id}`);
+          const patch = {};
+          if (row.plannedPrice == null) Object.assign(patch, { plannedPrice: 0, plannedCurrency: "CNY" });
+          const comment = INCLUDED_COMMENT(housings);
+          if ((!row.comment || row.comment.startsWith(PRICE_COMMENT_PREFIX) || row.comment.startsWith("Чертёж №")) && !row.comment?.includes(comment)) {
+            patch.comment = row.comment && !row.comment.startsWith(PRICE_COMMENT_PREFIX) ? `${row.comment} | ${comment}` : comment;
+          }
+          if (!Object.keys(patch).length) continue;
+          plog(`спецификация ~ ${row.component.internalArticle}: входит в цену разъёма ${housings.join(", ")} → плановая цена 0`);
+          totals.updated++;
+          if (args.apply) await api.patch(`/api/projects/${project.id}/components/${row.id}`, patch);
         }
       }
       if (r.actions.every((a) => !a.startsWith("спецификация"))) plog("спецификация: без изменений");

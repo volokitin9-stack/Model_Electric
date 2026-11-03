@@ -102,3 +102,29 @@ test("export/price_import.json: согласованные проекты и ц�
   const iskra = data.projects.find((p) => p.model === "Iskra");
   assert.ok(iskra.lines.some((l) => oemKey(l.oem) === oemKey("7282-8851-30")), "у Iskra есть 2-поз. Yazaki");
 });
+
+test("coveredContacts: пины входят в цену разъёма, только если все их разъёмы есть в своде", async () => {
+  const { coveredContacts } = await import("../lib/prices.js");
+  const connectors = [
+    { housingPn: "1-929621-1", contactPn: "927771-3" },
+    { housingPn: "—", contactPn: "927771-3" }, // отдельный пин без корпуса — не мешает
+    { housingPn: "174922-2", contactPn: "173631-1" }, // корпус -2 в своде нет
+    { housingPn: "7282-8851-30", contactPn: "не указан" },
+    { housingPn: "1-929627-1", contactPn: "962883-1" },
+    { housingPn: "L-KLS1-4.20-2X08-MH", contactPn: "962883-1" }, // этот корпус без цены
+  ];
+  const priced = new Set([oemKey("19296211"), oemKey("174922-1"), oemKey("7282885130"), oemKey("1-929627-1")]);
+  const covered = coveredContacts(connectors, priced);
+  assert.deepEqual([...covered.keys()], [oemKey("927771-3")]);
+  assert.deepEqual(covered.get(oemKey("927771-3")), ["1-929621-1"]);
+});
+
+test("комментарий из чертежа сохраняет хвост «| Свод цен: …» при обновлении", async () => {
+  const { diffProjectComponents, PRICE_TAIL } = await import("../lib/plan.js");
+  const item = { key: "927771-3", internalArticle: "927771-3", quantity: 12, status: "confirmed", projectComment: "Чертёж №4: новое" };
+  const row = (comment) => ({ id: "r", quantity: 12, status: "confirmed", comment, component: { internalArticle: "927771-3" } });
+  const same = diffProjectComponents([row(`Чертёж №4: новое${PRICE_TAIL} входит в цену`)], [item]);
+  assert.equal(same.update.length, 0);
+  const changed = diffProjectComponents([row(`Чертёж №4: старое${PRICE_TAIL} входит в цену`)], [item]);
+  assert.equal(changed.update[0].patch.comment, `Чертёж №4: новое${PRICE_TAIL} входит в цену`);
+});

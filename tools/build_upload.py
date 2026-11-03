@@ -142,6 +142,7 @@ def read_prices():
                     art = clean(ws.cell(rr, c).value)
                     moq = num(ws.cell(rr, c + 1).value)
                     price = num(ws.cell(rr, c + 2).value)
+                    kit_total = num(ws.cell(rr, c + 3).value)  # «Итого на комплект проводки» из свода (по основной строке)
                     if price is None and art is None:
                         continue
                     note = []
@@ -151,7 +152,7 @@ def read_prices():
                         note.append("нет цены")
                     if moq is None and price is not None:
                         note.append("нет MOQ")
-                    offers.append(dict(sup=sup, art=art, moq=moq, price=price, note="; ".join(note)))
+                    offers.append(dict(sup=sup, art=art, moq=moq, price=price, kit=kit_total, note="; ".join(note)))
                 if oem is None and not offers:
                     continue
                 if oem and oem.lower().startswith("i need"):
@@ -304,6 +305,10 @@ def main():
                 alt_costs.append(f"{variant}: {round(v_cny * k, 2)} ₽" + ("" if v_ok else " (не все цены)"))
         kit_rows = [e[0] if isinstance(e, tuple) else e for e in (variants[0][1] if variants else [])]
         bt = blocks[kit_rows[0]]["bt"] if kit_rows else None
+        main_entries = variants[0][1] if variants else []
+        file_kit = (round(sum(blocks[e]["file_total"] for e in dict.fromkeys(main_entries)), 2)
+                    if main_entries and all(isinstance(e, int) and blocks[e]["file_total"] for e in main_entries)
+                    else None)
         kit_rub = round(kit_cny * k, 2) if n_lines and n_noprice < n_lines else None
         missing = []
         if not p["approved"]:
@@ -336,11 +341,11 @@ def main():
                 drawings=drawings, ready=ready, missing="; ".join(missing) or None,
                 note="; ".join(x for x in (note, p["note"]) if x) or None,
                 sales=dict(qty=p["qty"], sum=p["sum"], avg=p["avg"]), kitCny=round(kit_cny, 4) if kit_rub else None,
-                kitRub=kit_rub, lines=[ln for ln in jlines if ln["oem"]]))
+                kitRub=kit_rub, fileKitRub=file_kit, lines=[ln for ln in jlines if ln["oem"]]))
         proj_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
                           p["qty"], p["sum"], p["avg"], p["kind"], ", ".join(map(str, drawings)) or None,
                           ", ".join(dict.fromkeys(blocks[r]["name"] for r in kit_rows)) or None, n_lines or None,
-                          round(kit_cny, 3) if kit_rub else None, kit_rub, "; ".join(alt_costs) or None, bt, share,
+                          round(kit_cny, 3) if kit_rub else None, kit_rub, file_kit, "; ".join(alt_costs) or None, bt, share,
                           ready,
                           "; ".join(missing) or None, "; ".join(x for x in (note, p["note"]) if x) or None])
         proj_fill.append({"Готов к загрузке": OKF, "Готов (предварительно)": OKF, "Готов (2 варианта)": OKF,
@@ -358,7 +363,7 @@ def main():
                 offer_rows.append([blk["name"], ln["row"], ln["side"], ln["role"], ln["oem"], ln["qty"], o["sup"],
                                    o["art"], o["moq"], o["price"],
                                    round(o["price"] * ln["qty"], 4) if o["price"] is not None else None,
-                                   "Да" if o is best else None, o["note"] or None])
+                                   o["kit"], "Да" if o is best else None, o["note"] or None])
 
     # Замечания по своду цен
     for br, blk in blocks.items():
@@ -393,7 +398,8 @@ def main():
     write_sheet(wb, "Загрузка",
                 ["ID", "Группа", "Марка", "Модель", "Поколение", "Согласовано", "№ чертежа", "Вариант",
                  "Блок свода цен", "Сторона", "Роль", "OEM артикул", "Кол-во на комплект", "Сверка с чертежом",
-                 "Поставщик (лучшая цена)", "Артикул поставщика", "MOQ", "Цена, CNY", "Сумма на комплект, CNY",
+                 "Поставщик (лучшая цена)", "Артикул поставщика", "MOQ", "Цена разъёма (корпус + пины + допы), CNY",
+                 "Сумма на комплект, CNY",
                  "Сумма на комплект, ₽", "Предложений", "Альтернативы (поставщик: артикул — цена CNY)",
                  "Статус", "Замечание"],
                 up_rows, [5, 10, 11, 22, 11, 11, 9, 12, 26, 8, 9, 18, 9, 18, 22, 22, 7, 9, 11, 11, 9, 60, 10, 45],
@@ -401,20 +407,26 @@ def main():
     write_sheet(wb, "Проекты",
                 ["Группа", "Марка", "Модель", "Поколение", "Согласовано", "Заказано, шт", "Заказано, ₽",
                  "Ср. цена продажи, ₽", "Тип проводки", "№ чертежа", "Блок свода цен", "Позиций разъёмов",
-                 "Разъёмы на комплект, CNY", "Разъёмы на комплект, ₽", "Альтернативный вариант, ₽",
+                 "Разъёмы на комплект, CNY", "Разъёмы на комплект, ₽", "Итог на комплект по своду (как в файле), ₽",
+                 "Альтернативный вариант, ₽",
                  "Цена первичный анализ, ₽",
                  "Доля разъёмов в цене продажи, %", "Готовность", "Чего не хватает", "Комментарий"],
-                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 30, 9, 26, 9, 11, 11, 40, 11, 11, 15, 40, 50], proj_fill)
+                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 30, 9, 26, 9, 11, 11, 13, 40, 11, 11, 15, 40, 50], proj_fill)
     write_sheet(wb, "Цены поставщиков",
                 ["Блок свода цен", "Строка", "Сторона", "Роль", "OEM артикул", "Кол-во на комплект", "Поставщик",
-                 "Артикул поставщика", "MOQ", "Цена, CNY", "Сумма на комплект, CNY", "Лучшая", "Замечание"],
-                offer_rows, [26, 7, 8, 9, 18, 9, 24, 24, 7, 9, 11, 8, 35])
+                 "Артикул поставщика", "MOQ", "Цена разъёма (корпус + пины + допы), CNY", "Сумма на комплект, CNY",
+                 "Итого на комплект проводки (из свода), CNY", "Лучшая", "Замечание"],
+                offer_rows, [26, 7, 8, 9, 18, 9, 24, 24, 7, 12, 11, 13, 8, 35])
     write_sheet(wb, "Замечания", ["Раздел", "Объект", "Замечание"], remarks, [12, 30, 100])
     write_sheet(wb, "Параметры", ["Параметр", "Значение"], [
         ["Дата выгрузки", date.today().isoformat()],
         ["Курс CNY → ₽ (из свода, BS1)", rate],
         ["Коэффициент накладных (из свода, BT1)", coef],
         ["Сумма, ₽", "Сумма CNY × курс × коэффициент"],
+        ["Цена разъёма в своде", "Комплект на один разъём: корпус + пины + необходимые допы. Пины и допы "
+                                 "отдельно не оцениваются (в проекте — плановая цена 0, «входит в цену разъёма»)"],
+        ["Итог на комплект по своду", "«Итого на комплект проводки» из свода: кол-во × цена основного разъёма + "
+                                      "доп. разъём; итог свода = (male + female) × курс × коэффициент"],
         ["Лучшая цена", "Минимальная цена за разъём среди предложений с артикулом поставщика; "
                         "если таких нет — среди всех предложений (с замечанием)"],
         ["Согласовано", "Зелёная заливка модели на листе «План разработок»"],

@@ -1584,6 +1584,7 @@
    },
    "kitCny": 7.16,
    "kitRub": 116.82,
+   "fileKitRub": 116.82,
    "lines": [
     {
      "oem": "191972716",
@@ -1636,6 +1637,7 @@
    },
    "kitCny": 6.12,
    "kitRub": 99.85,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "19296271",
@@ -1688,6 +1690,7 @@
    },
    "kitCny": 7.68,
    "kitRub": 125.3,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "2105-3724341",
@@ -1725,6 +1728,7 @@
    },
    "kitCny": 1.32,
    "kitRub": 21.54,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "928522-1",
@@ -1762,6 +1766,7 @@
    },
    "kitCny": 6.88,
    "kitRub": 112.25,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "98821-1061",
@@ -1814,6 +1819,7 @@
    },
    "kitCny": 6.88,
    "kitRub": 112.25,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "98821-1061",
@@ -1866,6 +1872,7 @@
    },
    "kitCny": 6.12,
    "kitRub": 99.85,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "19296271",
@@ -1948,6 +1955,7 @@
    },
    "kitCny": 6.12,
    "kitRub": 99.85,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "19296271",
@@ -2030,6 +2038,7 @@
    },
    "kitCny": 6.12,
    "kitRub": 99.85,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "19296271",
@@ -2112,6 +2121,7 @@
    },
    "kitCny": 4.72,
    "kitRub": 77.01,
+   "fileKitRub": 77.01,
    "lines": [
     {
      "oem": "174922-1",
@@ -2194,6 +2204,7 @@
    },
    "kitCny": 9.11,
    "kitRub": 148.63,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "7283885030",
@@ -2276,6 +2287,7 @@
    },
    "kitCny": 6.12,
    "kitRub": 99.85,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "19296271",
@@ -2326,6 +2338,7 @@
    },
    "kitCny": 5.23,
    "kitRub": 85.33,
+   "fileKitRub": 94.14,
    "lines": [
     {
      "oem": "1742642",
@@ -2406,6 +2419,7 @@
    },
    "kitCny": 10.2,
    "kitRub": 166.41,
+   "fileKitRub": 169.19,
    "lines": [
     {
      "oem": "6188-0696",
@@ -2486,6 +2500,7 @@
    },
    "kitCny": 2.68,
    "kitRub": 43.72,
+   "fileKitRub": null,
    "lines": [
     {
      "oem": "AMP174259-2",
@@ -2536,6 +2551,7 @@
    },
    "kitCny": null,
    "kitRub": null,
+   "fileKitRub": null,
    "lines": []
   },
   {
@@ -2555,6 +2571,7 @@
    },
    "kitCny": 1.82,
    "kitRub": 29.69,
+   "fileKitRub": 29.69,
    "lines": [
     {
      "oem": "90980-11596",
@@ -2590,6 +2607,7 @@
    },
    "kitCny": 0.994,
    "kitRub": 16.22,
+   "fileKitRub": 16.22,
    "lines": [
     {
      "oem": "90980-10796",
@@ -2640,6 +2658,7 @@
    },
    "kitCny": null,
    "kitRub": null,
+   "fileKitRub": null,
    "lines": []
   },
   {
@@ -2659,6 +2678,7 @@
    },
    "kitCny": null,
    "kitRub": null,
+   "fileKitRub": null,
    "lines": []
   },
   {
@@ -2678,6 +2698,7 @@
    },
    "kitCny": 6.6,
    "kitRub": 107.68,
+   "fileKitRub": 107.68,
    "lines": [
     {
      "oem": "988251065",
@@ -2760,6 +2781,7 @@
    },
    "kitCny": 7.6,
    "kitRub": 123.99,
+   "fileKitRub": 160.87,
    "lines": [
     {
      "oem": "5G0972715",

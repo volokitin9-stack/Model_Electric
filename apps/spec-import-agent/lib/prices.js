@@ -134,3 +134,31 @@ export function samePrice(current, offer) {
     (current.minimumOrderQuantity ?? null) === (offer.moq ?? null)
   );
 }
+
+/**
+ * Пины, стоимость которых уже входит в цену разъёма: в своде цена
+ * разъёма — это комплект «корпус + пины + необходимые допы».
+ * Пин считается покрытым, если каждый разъём чертежа, где он стоит,
+ * есть в своде с ценой. Строки чертежа без корпуса (отдельные пины)
+ * разъёму не приписываются и на решение не влияют.
+ * Возвращает Map: oemKey пина -> [корпуса, в цену которых он входит].
+ */
+export function coveredContacts(connectors, pricedHousingKeys) {
+  const byContact = new Map();
+  for (const c of connectors) {
+    const housing = c.housingPn && !/^[—-]$/.test(c.housingPn.trim()) ? c.housingPn.trim() : null;
+    const contact = c.contactPn && !/^([—-]|не указан)$/i.test(c.contactPn.trim()) ? c.contactPn.trim() : null;
+    if (!housing || !contact) continue;
+    const k = oemKey(contact);
+    const entry = byContact.get(k) ?? { housings: new Set(), allPriced: true };
+    entry.housings.add(housing);
+    if (!pricedHousingKeys.has(oemKey(housing))) entry.allPriced = false;
+    byContact.set(k, entry);
+  }
+  const out = new Map();
+  for (const [k, e] of byContact) if (e.allPriced) out.set(k, [...e.housings]);
+  return out;
+}
+
+export const INCLUDED_COMMENT = (housings) =>
+  `${PRICE_COMMENT_PREFIX} входит в цену разъёма ${housings.join(", ")} (цена свода = разъём + пины + допы)`;
