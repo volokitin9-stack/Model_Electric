@@ -43,6 +43,9 @@ COPY --from=web-build /app/web/dist /web/dist
 # без изменений — см. комментарий в apps/spec-import-agent/agent.js.
 COPY --from=agent-build /app/agent /spec-import-agent
 COPY specs /specs
+# Свод цен поставщиков для этапа «Свод цен» агента (tools/build_upload.py →
+# export/price_import.json); путь по умолчанию у агента — ../../export.
+COPY export/price_import.json /export/price_import.json
 
 # Каталог загруженных фото проектов — монтируйте сюда постоянный volume
 # хостинга (Railway/Render "persistent disk"), иначе фото пропадут при

@@ -48,13 +48,13 @@ export function SpecImportDialog({ open, onOpenChange }: { open: boolean; onOpen
     <Dialog open={open} onOpenChange={(v) => !busy && onOpenChange(v)}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Обновить данные из чертежей</DialogTitle>
+          <DialogTitle>Обновить данные из чертежей и свода цен</DialogTitle>
         </DialogHeader>
 
         <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto">
           {previewMutation.isPending && (
             <div className="flex items-center gap-2 py-8 justify-center text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Читаю чертежи и сверяю с базой…
+              <Loader2 className="h-4 w-4 animate-spin" /> Читаю чертежи и свод цен, сверяю с базой…
             </div>
           )}
 
@@ -69,6 +69,13 @@ export function SpecImportDialog({ open, onOpenChange }: { open: boolean; onOpen
                 <Stat label="Чертежей" value={report.totals.drawings} />
                 <Stat label="Ошибок" value={report.totals.errors} warn={report.totals.errors > 0} />
               </div>
+              {report.prices && (
+                <div className="grid grid-cols-3 gap-2 text-sm">
+                  <Stat label="Поставщиков +" value={report.totals.suppliersCreated ?? 0} />
+                  <Stat label="Кроссировок +" value={report.totals.offersCreated ?? 0} />
+                  <Stat label="Цен обновлено" value={report.totals.pricesUpdated ?? 0} />
+                </div>
+              )}
 
               <div className="flex flex-col gap-2">
                 {report.drawings.map((d) => (
@@ -89,6 +96,27 @@ export function SpecImportDialog({ open, onOpenChange }: { open: boolean; onOpen
                   </div>
                 ))}
               </div>
+
+              {report.prices && report.prices.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm font-medium">Свод цен поставщиков</div>
+                  {report.prices.map((p) => (
+                    <div key={p.key} className="rounded-md border border-border p-2.5 text-xs">
+                      <div className="mb-1 font-medium">{p.title}</div>
+                      {p.actions.map((a, i) => (
+                        <div key={i} className="text-muted-foreground">
+                          {a}
+                        </div>
+                      ))}
+                      {p.errors.map((e, i) => (
+                        <div key={i} className="text-destructive">
+                          ✖ {e}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {applied ? (
                 <p className="rounded-md border border-[var(--status-done-fg)] bg-[var(--status-done-bg)] p-3 text-sm">

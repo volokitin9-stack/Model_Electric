@@ -324,5 +324,16 @@ export type SpecImportReport = {
     extra: number;
     removed: number;
     errors: number;
+    // этап «Свод цен» (export/price_import.json)
+    suppliersCreated?: number;
+    offersCreated?: number;
+    pricesUpdated?: number;
   };
+  prices?: Array<{
+    key: string;
+    title: string;
+    actions: string[];
+    errors: string[];
+    project?: { id?: string; name: string; article?: string | null };
+  }>;
 };
