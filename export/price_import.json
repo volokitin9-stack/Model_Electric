@@ -1,0 +1,2797 @@
+{
+ "generatedAt": "2026-11-03",
+ "currency": "CNY",
+ "rate": 12.55,
+ "coef": 1.3,
+ "source": "sources/Svod_cen_postavshikov.xlsx «Лист1 (2)», sources/Plan_razrabotok_Ozon.xlsx",
+ "suppliers": [
+  "Ylcn",
+  "HD Connector",
+  "JINGMING",
+  "Star technology",
+  "Jiangsu Xing Yao Electric",
+  "YBConnector",
+  "QCLNC",
+  "OLT"
+ ],
+ "offers": [
+  {
+   "oem": "1742642",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ70616Y-1.8-100 DJ612-G1.8AF 10#蓝",
+   "moq": 200,
+   "price": 1.36,
+   "note": null
+  },
+  {
+   "oem": "1742642",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD0616Y-1.8-11J",
+   "moq": 100,
+   "price": 1.12,
+   "note": null
+  },
+  {
+   "oem": "1742642",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": "1742642",
+   "moq": 200,
+   "price": 1.0,
+   "note": null
+  },
+  {
+   "oem": "1742642",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST70616Y-1.8-11",
+   "moq": 500,
+   "price": 1.28,
+   "note": null
+  },
+  {
+   "oem": "1742642",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "70616Y-1.8-11",
+   "moq": 500,
+   "price": 0.77,
+   "note": null
+  },
+  {
+   "oem": "174262-2",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ70616Y-1.8-200",
+   "moq": 200,
+   "price": 1.66,
+   "note": null
+  },
+  {
+   "oem": "174262-2",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD0616Y-1.8-21J",
+   "moq": 100,
+   "price": 0.98,
+   "note": null
+  },
+  {
+   "oem": "174262-2",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "174262-2",
+   "moq": 200,
+   "price": 1.0,
+   "note": null
+  },
+  {
+   "oem": "174262-2",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST70616Y-1.8-21",
+   "moq": 500,
+   "price": 1.28,
+   "note": null
+  },
+  {
+   "oem": "174262-2",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "70616Y-1.8-21",
+   "moq": 500,
+   "price": 0.93,
+   "note": null
+  },
+  {
+   "oem": "7282885130",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ70220-1.2-100",
+   "moq": 200,
+   "price": 1.22,
+   "note": null
+  },
+  {
+   "oem": "7282885130",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD021K-0.6-11J",
+   "moq": 100,
+   "price": 0.88,
+   "note": null
+  },
+  {
+   "oem": "7282885130",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": "7282885130",
+   "moq": 200,
+   "price": 1.2,
+   "note": null
+  },
+  {
+   "oem": "7282885130",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7021K-0.6-11",
+   "moq": 500,
+   "price": 1.92,
+   "note": null
+  },
+  {
+   "oem": "7282885130",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7021K-0.6-11",
+   "moq": 500,
+   "price": 1.42,
+   "note": null
+  },
+  {
+   "oem": "7283885130",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ70220-1.2-200-Y",
+   "moq": 200,
+   "price": 1.42,
+   "note": null
+  },
+  {
+   "oem": "7283885130",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD021K-0.6-21J",
+   "moq": 100,
+   "price": 1.3,
+   "note": null
+  },
+  {
+   "oem": "7283885130",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "7283885130",
+   "moq": 200,
+   "price": 1.0,
+   "note": null
+  },
+  {
+   "oem": "7283885130",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7021K-0.6-21",
+   "moq": 500,
+   "price": 2.28,
+   "note": null
+  },
+  {
+   "oem": "7283885130",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7021K-0.6-21",
+   "moq": 500,
+   "price": 0.95,
+   "note": null
+  },
+  {
+   "oem": "6188-0696",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ71061-0.6-100",
+   "moq": 200,
+   "price": 2.54,
+   "note": null
+  },
+  {
+   "oem": "6188-0696",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD105Y-0.6-11J",
+   "moq": 100,
+   "price": 2.4,
+   "note": null
+  },
+  {
+   "oem": "6188-0696",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": "6188-0696",
+   "moq": 200,
+   "price": 2.5,
+   "note": null
+  },
+  {
+   "oem": "6188-0696",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7105Y-0.6-11",
+   "moq": 500,
+   "price": 3.52,
+   "note": null
+  },
+  {
+   "oem": "6188-0696",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7105Y-0.6-11",
+   "moq": 500,
+   "price": 1.86,
+   "note": null
+  },
+  {
+   "oem": "9098012380",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ71061-0.6-200-P",
+   "moq": 200,
+   "price": 2.82,
+   "note": null
+  },
+  {
+   "oem": "9098012380",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD105Y-0.6-21J",
+   "moq": 100,
+   "price": 2.8,
+   "note": null
+  },
+  {
+   "oem": "9098012380",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "9098012380",
+   "moq": 200,
+   "price": 2.5,
+   "note": null
+  },
+  {
+   "oem": "9098012380",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7105Y-0.6-21",
+   "moq": 500,
+   "price": 3.22,
+   "note": null
+  },
+  {
+   "oem": "9098012380",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7105Y-0.6-21",
+   "moq": 500,
+   "price": 2.42,
+   "note": null
+  },
+  {
+   "oem": "DJ7022A-2.2-11/21",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7025A-2.2-108-P",
+   "moq": 200,
+   "price": 1.75,
+   "note": null
+  },
+  {
+   "oem": "DJ7022A-2.2-11/21",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD022A-2.2-11GYJ",
+   "moq": 100,
+   "price": 0.96,
+   "note": null
+  },
+  {
+   "oem": "DJ7022A-2.2-11/21",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": "DJ7022A-2.2-11/21",
+   "moq": 200,
+   "price": 0.9,
+   "note": null
+  },
+  {
+   "oem": "DJ7022A-2.2-11/21",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7022A-2.2-11",
+   "moq": 500,
+   "price": 1.16,
+   "note": null
+  },
+  {
+   "oem": "DJ7022A-2.2-11/21",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7022A-2.2-11",
+   "moq": 500,
+   "price": 0.97,
+   "note": null
+  },
+  {
+   "oem": "61890772",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ70214A-2.3-208-Y",
+   "moq": 200,
+   "price": 3.12,
+   "note": null
+  },
+  {
+   "oem": "61890772",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD022A-2.2-21J",
+   "moq": 100,
+   "price": 0.74,
+   "note": null
+  },
+  {
+   "oem": "61890772",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "61890772",
+   "moq": 200,
+   "price": 1.0,
+   "note": null
+  },
+  {
+   "oem": "61890772",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7022A-2.2-21",
+   "moq": 500,
+   "price": 1.24,
+   "note": null
+  },
+  {
+   "oem": "61890772",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7022A-2.2-21",
+   "moq": 500,
+   "price": 0.84,
+   "note": null
+  },
+  {
+   "oem": "174922-1",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7044Y-1.8-200",
+   "moq": 200,
+   "price": 1.22,
+   "note": null
+  },
+  {
+   "oem": "174922-1",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD044Y-1.8-21J",
+   "moq": 100,
+   "price": 0.544,
+   "note": null
+  },
+  {
+   "oem": "174922-1",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7044Y-1.8-21",
+   "moq": 500,
+   "price": 0.82,
+   "note": null
+  },
+  {
+   "oem": "174922-1",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7044Y-1.8-21PA",
+   "moq": 500,
+   "price": 0.408,
+   "note": null
+  },
+  {
+   "oem": "174922-1",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "DH1504-1.5-21",
+   "moq": 1000,
+   "price": 1.46,
+   "note": null
+  },
+  {
+   "oem": "174929-1",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7044Y-1.8-102-P",
+   "moq": 200,
+   "price": 1.18,
+   "note": null
+  },
+  {
+   "oem": "174929-1",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD044Y-1.8-11J",
+   "moq": 100,
+   "price": 0.64,
+   "note": null
+  },
+  {
+   "oem": "174929-1",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7044Y-1.8-11",
+   "moq": 500,
+   "price": 0.77,
+   "note": null
+  },
+  {
+   "oem": "174929-1",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7044Y-1.8-11PA",
+   "moq": 500,
+   "price": 0.504,
+   "note": null
+  },
+  {
+   "oem": "174929-1",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "DH1504-1.5-11",
+   "moq": 1000,
+   "price": 1.46,
+   "note": null
+  },
+  {
+   "oem": "12052644",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7022-1.65-208",
+   "moq": 200,
+   "price": 1.04,
+   "note": null
+  },
+  {
+   "oem": "12052644",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD024B-1.5-21J",
+   "moq": 100,
+   "price": 0.65,
+   "note": null
+  },
+  {
+   "oem": "12052644",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": "12052644",
+   "moq": 200,
+   "price": 1.5,
+   "note": null
+  },
+  {
+   "oem": "12052644",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7024B-1.5-21",
+   "moq": 500,
+   "price": 0.66,
+   "note": null
+  },
+  {
+   "oem": "12052644",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7024B-1.5-21",
+   "moq": 500,
+   "price": 0.496,
+   "note": null
+  },
+  {
+   "oem": "12162343",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7022-1.65-11",
+   "moq": 200,
+   "price": 0.98,
+   "note": null
+  },
+  {
+   "oem": "12162343",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD024B-1.5-11J",
+   "moq": 100,
+   "price": 0.62,
+   "note": null
+  },
+  {
+   "oem": "12162343",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "12162343",
+   "moq": 200,
+   "price": 0.9,
+   "note": null
+  },
+  {
+   "oem": "12162343",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7024B-1.5-11",
+   "moq": 500,
+   "price": 0.85,
+   "note": null
+  },
+  {
+   "oem": "12162343",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7024B-1.5-11",
+   "moq": 500,
+   "price": 0.576,
+   "note": null
+  },
+  {
+   "oem": "12162343",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "DJY7021-1.65-11 含卡卡",
+   "moq": 1000,
+   "price": 1.04,
+   "note": null
+  },
+  {
+   "oem": "90980-11596",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "3TSH10MW",
+   "moq": 200,
+   "price": 1.82,
+   "note": null
+  },
+  {
+   "oem": "90980-11596",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD102Y-2.2-4.8-11J",
+   "moq": 100,
+   "price": 1.94,
+   "note": null
+  },
+  {
+   "oem": "90980-11596",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7101-2.2/4.8-1",
+   "moq": 500,
+   "price": 3.72,
+   "note": null
+  },
+  {
+   "oem": "90980-11596",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "90980-11596",
+   "moq": 500,
+   "price": 2.5,
+   "note": null
+  },
+  {
+   "oem": "90980-11596",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "TD1810-2.2-11",
+   "moq": 1000,
+   "price": 1.9,
+   "note": null
+  },
+  {
+   "oem": "90980-10796",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7064Y-2.2-11",
+   "moq": 200,
+   "price": 1.35,
+   "note": null
+  },
+  {
+   "oem": "90980-10796",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD064Y-2.2-11J",
+   "moq": 100,
+   "price": 0.722,
+   "note": null
+  },
+  {
+   "oem": "90980-10796",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7064Y-2.2-11",
+   "moq": 500,
+   "price": 1.26,
+   "note": null
+  },
+  {
+   "oem": "90980-10796",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7064Y-2.2-11POM",
+   "moq": 500,
+   "price": 0.61,
+   "note": null
+  },
+  {
+   "oem": "90980-10796",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "TD1806-2.2-11",
+   "moq": 1000,
+   "price": 1.32,
+   "note": null
+  },
+  {
+   "oem": "90980-10797",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7064Y-2.2-202",
+   "moq": 200,
+   "price": 1.14,
+   "note": null
+  },
+  {
+   "oem": "90980-10797",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD065Y-2.2-21J",
+   "moq": 100,
+   "price": 0.882,
+   "note": null
+  },
+  {
+   "oem": "90980-10797",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "90980-10797",
+   "moq": 200,
+   "price": 0.6,
+   "note": null
+  },
+  {
+   "oem": "90980-10797",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7064Y-2.2-21",
+   "moq": 500,
+   "price": 1.01,
+   "note": null
+  },
+  {
+   "oem": "90980-10797",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7064Y-2.2-21POM",
+   "moq": 500,
+   "price": 0.384,
+   "note": null
+  },
+  {
+   "oem": "90980-10797",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "TD1806-2.2-21",
+   "moq": 1000,
+   "price": 1.32,
+   "note": null
+  },
+  {
+   "oem": "5G0972715",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "5G0 972 715",
+   "moq": 200,
+   "price": 2.13,
+   "note": null
+  },
+  {
+   "oem": "5G0972715",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD057YA-1.5-11J",
+   "moq": 100,
+   "price": 4.4,
+   "note": null
+  },
+  {
+   "oem": "5G0972715",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "21052-1.5-11",
+   "moq": 500,
+   "price": 2.4,
+   "note": null
+  },
+  {
+   "oem": "5G0972715",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "VW21052-1.5-11",
+   "moq": 1000,
+   "price": 1.85,
+   "note": null
+  },
+  {
+   "oem": "5K0972705",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "5K0 972 705",
+   "moq": 200,
+   "price": 3.3,
+   "note": null
+  },
+  {
+   "oem": "5K0972705",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD057YA-1.5-21J",
+   "moq": 100,
+   "price": 2.8,
+   "note": null
+  },
+  {
+   "oem": "5K0972705",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "21052-1.5-21",
+   "moq": 500,
+   "price": 3.65,
+   "note": null
+  },
+  {
+   "oem": "5K0972705",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "VW21052-1.5-21",
+   "moq": 1000,
+   "price": 1.95,
+   "note": null
+  },
+  {
+   "oem": "191972716",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "191972716",
+   "moq": 200,
+   "price": 3.26,
+   "note": null
+  },
+  {
+   "oem": "191972716",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD063B-2.8-11J",
+   "moq": 100,
+   "price": 2.2,
+   "note": null
+  },
+  {
+   "oem": "191972716",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "191972716",
+   "moq": 500,
+   "price": 3.18,
+   "note": null
+  },
+  {
+   "oem": "1J0972706",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7067Y-3.5-200-P",
+   "moq": 200,
+   "price": 2.6,
+   "note": null
+  },
+  {
+   "oem": "1J0972706",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD063B-2.8-21J",
+   "moq": 100,
+   "price": 1.78,
+   "note": null
+  },
+  {
+   "oem": "1J0972706",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7063A-1.5-21",
+   "moq": 500,
+   "price": 2.18,
+   "note": null
+  },
+  {
+   "oem": "1J0972706",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7063A-1.5-21",
+   "moq": 500,
+   "price": 1.38,
+   "note": null
+  },
+  {
+   "oem": "988251065",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7061A-1.5/2.8- 104",
+   "moq": 200,
+   "price": 2.19,
+   "note": null
+  },
+  {
+   "oem": "988251065",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD061A-1.5-2.8-11J",
+   "moq": 100,
+   "price": 2.6,
+   "note": null
+  },
+  {
+   "oem": "988251065",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "988251065",
+   "moq": 500,
+   "price": 4.48,
+   "note": null
+  },
+  {
+   "oem": "988251065",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "NS21065-1.6/2.8-11",
+   "moq": 1000,
+   "price": 2.03,
+   "note": null
+  },
+  {
+   "oem": "988211065",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7061-1.5/2.8-21",
+   "moq": 200,
+   "price": 2.12,
+   "note": null
+  },
+  {
+   "oem": "988211065",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD061A-1.5-2.8-21J",
+   "moq": 100,
+   "price": 1.44,
+   "note": null
+  },
+  {
+   "oem": "988211065",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "988211065",
+   "moq": 200,
+   "price": 1.8,
+   "note": null
+  },
+  {
+   "oem": "988211065",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7068K-1.5/2.8-21",
+   "moq": 500,
+   "price": 1.98,
+   "note": null
+  },
+  {
+   "oem": "988211065",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7068K-1.5/2.8-21",
+   "moq": 500,
+   "price": 1.27,
+   "note": null
+  },
+  {
+   "oem": "988211065",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "NS21065-1.6/2.8-21",
+   "moq": 1000,
+   "price": 2.03,
+   "note": null
+  },
+  {
+   "oem": "3C0 972 733",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7063YY-3.5-11",
+   "moq": 200,
+   "price": 2.28,
+   "note": null
+  },
+  {
+   "oem": "3C0 972 733",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD069B-2.8-11J",
+   "moq": 100,
+   "price": 1.29,
+   "note": null
+  },
+  {
+   "oem": "3C0 972 733",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "XY-49",
+   "moq": 500,
+   "price": 1.48,
+   "note": null
+  },
+  {
+   "oem": "1J0 972 926",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ623-E3.5A",
+   "moq": 200,
+   "price": 2.28,
+   "note": null
+  },
+  {
+   "oem": "1J0 972 926",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD069B-2.8-21J",
+   "moq": 100,
+   "price": 1.23,
+   "note": null
+  },
+  {
+   "oem": "1J0 972 926",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": "1J0 972 926",
+   "moq": 200,
+   "price": 1.3,
+   "note": null
+  },
+  {
+   "oem": "1J0 972 926",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7069A-3.5-21",
+   "moq": 500,
+   "price": 1.78,
+   "note": null
+  },
+  {
+   "oem": "1J0 972 926",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7069A-3.5-21",
+   "moq": 500,
+   "price": 1.12,
+   "note": null
+  },
+  {
+   "oem": "928522-1",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ3091Y-1.5-112-P",
+   "moq": 200,
+   "price": 3.3,
+   "note": null
+  },
+  {
+   "oem": "928522-1",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD3091Y-1.5-11",
+   "moq": null,
+   "price": 1.97,
+   "note": "нет MOQ"
+  },
+  {
+   "oem": "928522-1",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "3091Y-1.5-11",
+   "moq": 500,
+   "price": 1.32,
+   "note": null
+  },
+  {
+   "oem": "928522-1",
+   "side": "Male",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 2.6,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "2105-3724341",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ70605-1.65-210-Y",
+   "moq": 200,
+   "price": 1.92,
+   "note": null
+  },
+  {
+   "oem": "2105-3724341",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD061-3-21",
+   "moq": 100,
+   "price": 6.4,
+   "note": null
+  },
+  {
+   "oem": "2105-3724341",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": null,
+   "moq": 500,
+   "price": 2.8,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "2105-3724341",
+   "side": "Female",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 3.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "98821-1061",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7061-1.5/2.8-11",
+   "moq": 200,
+   "price": 2.1,
+   "note": null
+  },
+  {
+   "oem": "98821-1061",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD061-1.5-2.8-11",
+   "moq": 100,
+   "price": 1.84,
+   "note": null
+  },
+  {
+   "oem": "98821-1061",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": null,
+   "moq": 200,
+   "price": 1.6,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "98821-1061",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7068K-1.5/2.8-21",
+   "moq": null,
+   "price": 2.0,
+   "note": "нет MOQ"
+  },
+  {
+   "oem": "98821-1061",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "NS21062-1.6/2.8-11",
+   "moq": 1000,
+   "price": 2.03,
+   "note": null
+  },
+  {
+   "oem": "98821-1061",
+   "side": "Male",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 3.8,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "98825-1061",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7062-1.5/2.8-21",
+   "moq": 200,
+   "price": 1.62,
+   "note": null
+  },
+  {
+   "oem": "98825-1061",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD061-1.5-2.8-21J",
+   "moq": 100,
+   "price": 1.6,
+   "note": null
+  },
+  {
+   "oem": "98825-1061",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7067-1.5/2.8-11",
+   "moq": 500,
+   "price": 2.8,
+   "note": null
+  },
+  {
+   "oem": "98825-1061",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "NS21062-1.6/2.8-21",
+   "moq": 1000,
+   "price": 2.03,
+   "note": null
+  },
+  {
+   "oem": "98825-1061",
+   "side": "Female",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 3.8,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ70620-1.2-100",
+   "moq": 200,
+   "price": 2.16,
+   "note": null
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD061K-0.6-11J",
+   "moq": 100,
+   "price": 2.68,
+   "note": null
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": null,
+   "moq": 200,
+   "price": 2.1,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7061K-0.6-21",
+   "moq": null,
+   "price": 2.5,
+   "note": "нет MOQ"
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7061K-0.6-11",
+   "moq": 500,
+   "price": 1.8,
+   "note": null
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "YBConnector",
+   "article": "6-1-92",
+   "moq": 100,
+   "price": 2.4,
+   "note": null
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "NS23062-0.7-11",
+   "moq": 1000,
+   "price": 2.28,
+   "note": null
+  },
+  {
+   "oem": "7283885030",
+   "side": "Male",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 4.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ70620-1.2-200",
+   "moq": 200,
+   "price": 2.52,
+   "note": null
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD061K-0.6-21J",
+   "moq": 100,
+   "price": 2.78,
+   "note": null
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": null,
+   "moq": 200,
+   "price": 2.4,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7061K-0.6-11",
+   "moq": 500,
+   "price": 2.8,
+   "note": null
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7061K-0.6-21",
+   "moq": 500,
+   "price": 1.84,
+   "note": null
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "YBConnector",
+   "article": "6-1-91",
+   "moq": 100,
+   "price": 2.4,
+   "note": null
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "NS23062-0.7-21",
+   "moq": 1000,
+   "price": 2.48,
+   "note": null
+  },
+  {
+   "oem": "7282885030",
+   "side": "Female",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 4.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "19296271",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ7069Y-2.8-100-P",
+   "moq": 200,
+   "price": 1.84,
+   "note": null
+  },
+  {
+   "oem": "19296271",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD069A-2.8-11J",
+   "moq": 100,
+   "price": 2.02,
+   "note": null
+  },
+  {
+   "oem": "19296271",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST7062-3.5-11",
+   "moq": null,
+   "price": 2.58,
+   "note": "нет MOQ"
+  },
+  {
+   "oem": "19296271",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": null,
+   "moq": 500,
+   "price": 1.66,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "19296271",
+   "side": "Male",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 3.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "19296211",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ7069Y-2.8-200-P",
+   "moq": 200,
+   "price": 1.78,
+   "note": null
+  },
+  {
+   "oem": "19296211",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD069A-2.8-21J",
+   "moq": 100,
+   "price": 1.64,
+   "note": null
+  },
+  {
+   "oem": "19296211",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": null,
+   "moq": 200,
+   "price": 1.2,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "19296211",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST7062-3.5-21",
+   "moq": 500,
+   "price": 2.46,
+   "note": null
+  },
+  {
+   "oem": "19296211",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "7069A-3.5-21",
+   "moq": 500,
+   "price": 1.22,
+   "note": null
+  },
+  {
+   "oem": "19296211",
+   "side": "Female",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 1.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "Ylcn",
+   "article": "DJ70416Y-1.8-11-3",
+   "moq": 200,
+   "price": 0.94,
+   "note": null
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "HD Connector",
+   "article": "HD0416Y-1.8-11J",
+   "moq": 100,
+   "price": 0.91,
+   "note": null
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "JINGMING",
+   "article": null,
+   "moq": 200,
+   "price": 0.9,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "Star technology",
+   "article": "ST70416Y-1.8-11",
+   "moq": null,
+   "price": 1.1,
+   "note": "нет MOQ"
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "XY-49",
+   "moq": 500,
+   "price": 0.62,
+   "note": null
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "YBConnector",
+   "article": "4-1-72",
+   "moq": 100,
+   "price": 1.87,
+   "note": null
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "QCLNC",
+   "article": "DJ7046Y-2-11",
+   "moq": 1000,
+   "price": 1.23,
+   "note": null
+  },
+  {
+   "oem": "AMP174259-2",
+   "side": "Male",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 1.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "Ylcn",
+   "article": "DJ70416Y-1.8-200",
+   "moq": 200,
+   "price": 1.14,
+   "note": null
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "HD Connector",
+   "article": "HD0416Y-1.8-21J",
+   "moq": 100,
+   "price": 0.99,
+   "note": null
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "JINGMING",
+   "article": null,
+   "moq": 200,
+   "price": 0.9,
+   "note": "нет артикула поставщика"
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "Star technology",
+   "article": "ST70416Y-1.8-21",
+   "moq": 500,
+   "price": 1.3,
+   "note": null
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "Jiangsu Xing Yao Electric",
+   "article": "70416Y-1.8-21",
+   "moq": 500,
+   "price": 0.72,
+   "note": null
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "YBConnector",
+   "article": "4-1-71",
+   "moq": 100,
+   "price": 1.87,
+   "note": null
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "QCLNC",
+   "article": "DJ7046Y-2-21",
+   "moq": 1000,
+   "price": 1.28,
+   "note": null
+  },
+  {
+   "oem": "AMP174257-2",
+   "side": "Female",
+   "supplier": "OLT",
+   "article": null,
+   "moq": null,
+   "price": 1.0,
+   "note": "нет артикула поставщика; нет MOQ"
+  }
+ ],
+ "projects": [
+  {
+   "key": "plan-12",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Niva Travel Classic / Comfort / Black",
+   "gen": "2020-2023",
+   "drawings": [
+    5
+   ],
+   "ready": "Готов к загрузке",
+   "missing": null,
+   "note": "Чертёж №5: 191972716 / 1J0972706; Уточнить на какую модель нашел разъемы",
+   "sales": {
+    "qty": 124,
+    "sum": 390630,
+    "avg": 3150.2419
+   },
+   "kitCny": 7.16,
+   "kitRub": 116.82,
+   "lines": [
+    {
+     "oem": "191972716",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №5",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD063B-2.8-11J",
+      "price": 2.2,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "1J0972706",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №5",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7063A-1.5-21",
+      "price": 1.38,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-13",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Niva Travel Luxe / Luxe Off-road",
+   "gen": "2021-2025",
+   "drawings": [
+    12
+   ],
+   "ready": "Частично",
+   "missing": "артикулы не совпадают с чертежом: 1 поз.",
+   "note": "Чертёж №12 на TE 1-929627-1 = 19296271 (строка свода Chevrolet Niva), а не 191972716; Уточнить на какую модель нашел разъемы",
+   "sales": {
+    "qty": 25,
+    "sum": 48652,
+    "avg": 1946.08
+   },
+   "kitCny": 6.12,
+   "kitRub": 99.85,
+   "lines": [
+    {
+     "oem": "19296271",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №12",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "DJ7069Y-2.8-100-P",
+      "price": 1.84,
+      "moq": 200.0
+     }
+    },
+    {
+     "oem": "19296211",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.22,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-14",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Niva / Niva Legend",
+   "gen": "1993-",
+   "drawings": [
+    11
+   ],
+   "ready": "Готов к загрузке",
+   "missing": null,
+   "note": "Чертёж №11: колодки 2105-3724341",
+   "sales": {
+    "qty": 115,
+    "sum": 286564,
+    "avg": 2491.8609
+   },
+   "kitCny": 7.68,
+   "kitRub": 125.3,
+   "lines": [
+    {
+     "oem": "2105-3724341",
+     "side": "Female",
+     "qty": 4,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №11",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "DJ70605-1.65-210-Y",
+      "price": 1.92,
+      "moq": 200.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-15",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Niva / Niva Legend",
+   "gen": "2020-",
+   "drawings": [
+    1
+   ],
+   "ready": "Готов к загрузке",
+   "missing": null,
+   "note": "Чертёж №1: 928522-1",
+   "sales": {
+    "qty": 11,
+    "sum": 18693,
+    "avg": 1699.3636
+   },
+   "kitCny": 1.32,
+   "kitRub": 21.54,
+   "lines": [
+    {
+     "oem": "928522-1",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №1",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "3091Y-1.5-11",
+      "price": 1.32,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-16",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Largus",
+   "gen": "2012-2021",
+   "drawings": [
+    9
+   ],
+   "ready": "Готов к загрузке",
+   "missing": null,
+   "note": null,
+   "sales": {
+    "qty": 36,
+    "sum": 103777,
+    "avg": 2882.6944
+   },
+   "kitCny": 6.88,
+   "kitRub": 112.25,
+   "lines": [
+    {
+     "oem": "98821-1061",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №9",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD061-1.5-2.8-11",
+      "price": 1.84,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "98825-1061",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №9",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD061-1.5-2.8-21J",
+      "price": 1.6,
+      "moq": 100.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-17",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Largus",
+   "gen": "2021-",
+   "drawings": [
+    10
+   ],
+   "ready": "Готов (предварительно)",
+   "missing": "предварительно: AMP 1-929592-1: ответная часть не найдена, предварительно разъёмы как у Largus 2012-2021",
+   "note": "AMP 1-929592-1 (свод, стр. 12): ответная часть не подобрана. Предварительно разъёмы одинаковые с Largus 2012-2021 — взяты Molex 98821/98825-1061 (стр. 19), подтвердить",
+   "sales": {
+    "qty": 15,
+    "sum": 82660,
+    "avg": 5510.6667
+   },
+   "kitCny": 6.88,
+   "kitRub": 112.25,
+   "lines": [
+    {
+     "oem": "98821-1061",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №10",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD061-1.5-2.8-11",
+      "price": 1.84,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "98825-1061",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №10",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD061-1.5-2.8-21J",
+      "price": 1.6,
+      "moq": 100.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-18",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Granta SE",
+   "gen": "2011-",
+   "drawings": [
+    4
+   ],
+   "ready": "Готов (2 варианта)",
+   "missing": "выбрать вариант разъёмов",
+   "note": "Два варианта разъёмов: чертёж — TE 1-929621-1 / 1-929627-1 (= 19296211 / 19296271, цены из строки Chevrolet Niva), свод — 3C0 972 733 / 1J0 972 926. Какой верный — подтвердить",
+   "sales": {
+    "qty": 99,
+    "sum": 230055,
+    "avg": 2323.7879
+   },
+   "kitCny": 6.12,
+   "kitRub": 99.85,
+   "lines": [
+    {
+     "oem": "19296271",
+     "side": "Male",
+     "qty": 2,
+     "variant": "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)",
+     "main": true,
+     "check": "есть в чертеже №4",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "DJ7069Y-2.8-100-P",
+      "price": 1.84,
+      "moq": 200.0
+     }
+    },
+    {
+     "oem": "19296211",
+     "side": "Female",
+     "qty": 2,
+     "variant": "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)",
+     "main": true,
+     "check": "есть в чертеже №4",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.22,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "3C0 972 733",
+     "side": "Male",
+     "qty": 2,
+     "variant": "Вариант 2: по своду 3C0 972 733 / 1J0 972 926",
+     "main": false,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом (альтернативный вариант)",
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD069B-2.8-11J",
+      "price": 1.29,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "1J0 972 926",
+     "side": "Female",
+     "qty": 2,
+     "variant": "Вариант 2: по своду 3C0 972 733 / 1J0 972 926",
+     "main": false,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом (альтернативный вариант)",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.12,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-19",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Granta SW",
+   "gen": "2018-",
+   "drawings": [
+    8
+   ],
+   "ready": "Готов (2 варианта)",
+   "missing": "выбрать вариант разъёмов",
+   "note": "Два варианта разъёмов: чертёж — TE 1-929621-1 / 1-929627-1 (= 19296211 / 19296271, цены из строки Chevrolet Niva), свод — 3C0 972 733 / 1J0 972 926. Какой верный — подтвердить",
+   "sales": {
+    "qty": 14,
+    "sum": 25922,
+    "avg": 1851.5714
+   },
+   "kitCny": 6.12,
+   "kitRub": 99.85,
+   "lines": [
+    {
+     "oem": "19296271",
+     "side": "Male",
+     "qty": 2,
+     "variant": "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)",
+     "main": true,
+     "check": "есть в чертеже №8",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "DJ7069Y-2.8-100-P",
+      "price": 1.84,
+      "moq": 200.0
+     }
+    },
+    {
+     "oem": "19296211",
+     "side": "Female",
+     "qty": 2,
+     "variant": "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)",
+     "main": true,
+     "check": "есть в чертеже №8",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.22,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "3C0 972 733",
+     "side": "Male",
+     "qty": 2,
+     "variant": "Вариант 2: по своду 3C0 972 733 / 1J0 972 926",
+     "main": false,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом (альтернативный вариант)",
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD069B-2.8-11J",
+      "price": 1.29,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "1J0 972 926",
+     "side": "Female",
+     "qty": 2,
+     "variant": "Вариант 2: по своду 3C0 972 733 / 1J0 972 926",
+     "main": false,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом (альтернативный вариант)",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.12,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-20",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Granta LB",
+   "gen": "2011-",
+   "drawings": [
+    4
+   ],
+   "ready": "Готов (2 варианта)",
+   "missing": "выбрать вариант разъёмов",
+   "note": "Два варианта разъёмов: чертёж — TE 1-929621-1 / 1-929627-1 (= 19296211 / 19296271, цены из строки Chevrolet Niva), свод — 3C0 972 733 / 1J0 972 926. Какой верный — подтвердить",
+   "sales": {
+    "qty": 48,
+    "sum": 99692,
+    "avg": 2076.9167
+   },
+   "kitCny": 6.12,
+   "kitRub": 99.85,
+   "lines": [
+    {
+     "oem": "19296271",
+     "side": "Male",
+     "qty": 2,
+     "variant": "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)",
+     "main": true,
+     "check": "есть в чертеже №4",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "DJ7069Y-2.8-100-P",
+      "price": 1.84,
+      "moq": 200.0
+     }
+    },
+    {
+     "oem": "19296211",
+     "side": "Female",
+     "qty": 2,
+     "variant": "Вариант 1: по чертежу TE 1-929621-1 / 1-929627-1 (цены из строки Chevrolet Niva)",
+     "main": true,
+     "check": "есть в чертеже №4",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.22,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "3C0 972 733",
+     "side": "Male",
+     "qty": 2,
+     "variant": "Вариант 2: по своду 3C0 972 733 / 1J0 972 926",
+     "main": false,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом (альтернативный вариант)",
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD069B-2.8-11J",
+      "price": 1.29,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "1J0 972 926",
+     "side": "Female",
+     "qty": 2,
+     "variant": "Вариант 2: по своду 3C0 972 733 / 1J0 972 926",
+     "main": false,
+     "check": "нет в чертеже",
+     "issue": "артикул не совпадает с чертежом (альтернативный вариант)",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.12,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-21",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Vesta",
+   "gen": "2023-",
+   "drawings": [
+    2
+   ],
+   "ready": "Частично",
+   "missing": "артикулы не совпадают с чертежом: 2 поз.",
+   "note": "ВНИМАНИЕ: свод 174922-1 / 174929-1, чертёж 174922-2 / 174929-2 — суффикс -1/-2 означает другой тип (кодировку) корпуса, проверить",
+   "sales": {
+    "qty": 22,
+    "sum": 126265,
+    "avg": 5739.3182
+   },
+   "kitCny": 4.72,
+   "kitRub": 77.01,
+   "lines": [
+    {
+     "oem": "174922-1",
+     "side": "Male",
+     "qty": 4,
+     "variant": "комплект",
+     "main": true,
+     "check": "отличается от чертежа",
+     "issue": "в чертеже №2 174922-2: суффикс -1/-2 — другой тип (кодировка) корпуса, проверить",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7044Y-1.8-21PA",
+      "price": 0.408,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "174929-1",
+     "side": "Female",
+     "qty": 4,
+     "variant": "комплект",
+     "main": true,
+     "check": "отличается от чертежа",
+     "issue": "в чертеже №2 174929-2: суффикс -1/-2 — другой тип (кодировка) корпуса, проверить",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7044Y-1.8-11PA",
+      "price": 0.504,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "12052644",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №2",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7024B-1.5-21",
+      "price": 0.496,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "12162343",
+     "side": "Female",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №2",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7024B-1.5-11",
+      "price": 0.576,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-22",
+   "group": "Отечка",
+   "brand": "Lada",
+   "model": "Iskra",
+   "gen": "2025-",
+   "drawings": [
+    3
+   ],
+   "ready": "Готов к загрузке",
+   "missing": null,
+   "note": "2-поз. Yazaki 7282/7283-8851-30 взят из блока Haval Dargo (свод, стр. 5)",
+   "sales": {
+    "qty": 8,
+    "sum": 47157,
+    "avg": 5894.625
+   },
+   "kitCny": 9.11,
+   "kitRub": 148.63,
+   "lines": [
+    {
+     "oem": "7283885030",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №3",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7061K-0.6-11",
+      "price": 1.8,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "7282885030",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №3",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7061K-0.6-21",
+      "price": 1.84,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "7282885130",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №3",
+     "issue": "разъём взят из блока Haval Dargo",
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD021K-0.6-11J",
+      "price": 0.88,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "7283885130",
+     "side": "Female",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №3",
+     "issue": "разъём взят из блока Haval Dargo",
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7021K-0.6-21",
+      "price": 0.95,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-23",
+   "group": "Отечка",
+   "brand": "Chevrolet",
+   "model": "Niva",
+   "gen": "2002-2020",
+   "drawings": [
+    7
+   ],
+   "ready": "Готов к загрузке",
+   "missing": null,
+   "note": "19296271 / 19296211 = TE 1-929627-1 / 1-929621-1",
+   "sales": {
+    "qty": 94,
+    "sum": 122712,
+    "avg": 1305.4468
+   },
+   "kitCny": 6.12,
+   "kitRub": 99.85,
+   "lines": [
+    {
+     "oem": "19296271",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №7",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "DJ7069Y-2.8-100-P",
+      "price": 1.84,
+      "moq": 200.0
+     }
+    },
+    {
+     "oem": "19296211",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №7",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7069A-3.5-21",
+      "price": 1.22,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-29",
+   "group": "Иномарки",
+   "brand": "Haval",
+   "model": "Dargo",
+   "gen": "2022-",
+   "drawings": [],
+   "ready": "Частично",
+   "missing": "нет чертежа",
+   "note": null,
+   "sales": {
+    "qty": 56,
+    "sum": 427629,
+    "avg": 7636.2321
+   },
+   "kitCny": 5.23,
+   "kitRub": 85.33,
+   "lines": [
+    {
+     "oem": "1742642",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "70616Y-1.8-11",
+      "price": 0.77,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "174262-2",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "70616Y-1.8-21",
+      "price": 0.93,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "7282885130",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD021K-0.6-11J",
+      "price": 0.88,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "7283885130",
+     "side": "Female",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7021K-0.6-21",
+      "price": 0.95,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-30",
+   "group": "Иномарки",
+   "brand": "Haval",
+   "model": "Jolion",
+   "gen": "2021-",
+   "drawings": [],
+   "ready": "Частично",
+   "missing": "нет чертежа",
+   "note": null,
+   "sales": {
+    "qty": 41,
+    "sum": 363376,
+    "avg": 8862.8293
+   },
+   "kitCny": 10.2,
+   "kitRub": 166.41,
+   "lines": [
+    {
+     "oem": "6188-0696",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7105Y-0.6-11",
+      "price": 1.86,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "9098012380",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7105Y-0.6-21",
+      "price": 2.42,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "DJ7022A-2.2-11/21",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "JINGMING",
+      "article": "DJ7022A-2.2-11/21",
+      "price": 0.9,
+      "moq": 200.0
+     }
+    },
+    {
+     "oem": "61890772",
+     "side": "Female",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD022A-2.2-21J",
+      "price": 0.74,
+      "moq": 100.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-31",
+   "group": "Иномарки",
+   "brand": "Haval",
+   "model": "M6",
+   "gen": "2021-",
+   "drawings": [],
+   "ready": "Частично",
+   "missing": "нет чертежа",
+   "note": null,
+   "sales": {
+    "qty": 22,
+    "sum": 154699,
+    "avg": 7031.7727
+   },
+   "kitCny": 2.68,
+   "kitRub": 43.72,
+   "lines": [
+    {
+     "oem": "AMP174259-2",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "XY-49",
+      "price": 0.62,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "AMP174257-2",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "70416Y-1.8-21",
+      "price": 0.72,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-32",
+   "group": "Иномарки",
+   "brand": "Toyota",
+   "model": "Rav4",
+   "gen": "2013-2019",
+   "drawings": [],
+   "ready": "Нет данных",
+   "missing": "нет чертежа; нет цен разъёмов",
+   "note": null,
+   "sales": {
+    "qty": 30,
+    "sum": 149793,
+    "avg": 4993.1
+   },
+   "kitCny": null,
+   "kitRub": null,
+   "lines": []
+  },
+  {
+   "key": "plan-33",
+   "group": "Иномарки",
+   "brand": "Toyota",
+   "model": "Land Cruiser 150 Prado",
+   "gen": "2009-2024",
+   "drawings": [],
+   "ready": "Частично",
+   "missing": "нет чертежа",
+   "note": "Female в своде цен не указан",
+   "sales": {
+    "qty": 40,
+    "sum": 269231,
+    "avg": 6730.775
+   },
+   "kitCny": 1.82,
+   "kitRub": 29.69,
+   "lines": [
+    {
+     "oem": "90980-11596",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Ylcn",
+      "article": "3TSH10MW",
+      "price": 1.82,
+      "moq": 200.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-34",
+   "group": "Иномарки",
+   "brand": "Toyota",
+   "model": "Land Cruiser 200",
+   "gen": "2007-2015-2021",
+   "drawings": [],
+   "ready": "Частично",
+   "missing": "нет чертежа",
+   "note": null,
+   "sales": {
+    "qty": 25,
+    "sum": 173571,
+    "avg": 6942.84
+   },
+   "kitCny": 0.994,
+   "kitRub": 16.22,
+   "lines": [
+    {
+     "oem": "90980-10796",
+     "side": "Male",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7064Y-2.2-11POM",
+      "price": 0.61,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "90980-10797",
+     "side": "Female",
+     "qty": 1,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7064Y-2.2-21POM",
+      "price": 0.384,
+      "moq": 500.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-35",
+   "group": "Иномарки",
+   "brand": "Renault",
+   "model": "Duster",
+   "gen": "2010-2015",
+   "drawings": [],
+   "ready": "Нет данных",
+   "missing": "нет чертежа; нет цен разъёмов",
+   "note": null,
+   "sales": {
+    "qty": 24,
+    "sum": 71101,
+    "avg": 2962.5417
+   },
+   "kitCny": null,
+   "kitRub": null,
+   "lines": []
+  },
+  {
+   "key": "plan-36",
+   "group": "Иномарки",
+   "brand": "Renault",
+   "model": "Logan",
+   "gen": "2010-2014",
+   "drawings": [],
+   "ready": "Нет данных",
+   "missing": "нет чертежа; нет цен разъёмов",
+   "note": null,
+   "sales": {
+    "qty": 19,
+    "sum": 48137,
+    "avg": 2533.5263
+   },
+   "kitCny": null,
+   "kitRub": null,
+   "lines": []
+  },
+  {
+   "key": "plan-37",
+   "group": "Иномарки",
+   "brand": "Renault",
+   "model": "Logan",
+   "gen": "2014-2022",
+   "drawings": [],
+   "ready": "Частично",
+   "missing": "нет чертежа; выбрать вариант разъёмов",
+   "note": "Альтернатива: Molex 98821/98825-1061 (строка Largus/Logan 2)",
+   "sales": {
+    "qty": 7,
+    "sum": 38005,
+    "avg": 5429.2857
+   },
+   "kitCny": 6.6,
+   "kitRub": 107.68,
+   "lines": [
+    {
+     "oem": "988251065",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "QCLNC",
+      "article": "NS21065-1.6/2.8-11",
+      "price": 2.03,
+      "moq": 1000.0
+     }
+    },
+    {
+     "oem": "988211065",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "Jiangsu Xing Yao Electric",
+      "article": "7068K-1.5/2.8-21",
+      "price": 1.27,
+      "moq": 500.0
+     }
+    },
+    {
+     "oem": "98821-1061",
+     "side": "Male",
+     "qty": 2,
+     "variant": "альтернатива: Molex 98821/98825-1061",
+     "main": false,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD061-1.5-2.8-11",
+      "price": 1.84,
+      "moq": 100.0
+     }
+    },
+    {
+     "oem": "98825-1061",
+     "side": "Female",
+     "qty": 2,
+     "variant": "альтернатива: Molex 98821/98825-1061",
+     "main": false,
+     "check": "чертежа нет",
+     "issue": null,
+     "best": {
+      "supplier": "HD Connector",
+      "article": "HD061-1.5-2.8-21J",
+      "price": 1.6,
+      "moq": 100.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "plan-39",
+   "group": "Иномарки",
+   "brand": "Volkswagen",
+   "model": "Polo",
+   "gen": "2010-2020",
+   "drawings": [
+    6
+   ],
+   "ready": "Частично",
+   "missing": "артикулы не совпадают с чертежом: 1 поз.",
+   "note": "ВНИМАНИЕ: свод male 5G0972715, чертёж №6 5K0972715 — другой номер VAG, проверить совместимость",
+   "sales": {
+    "qty": 13,
+    "sum": 67307,
+    "avg": 5177.4615
+   },
+   "kitCny": 7.6,
+   "kitRub": 123.99,
+   "lines": [
+    {
+     "oem": "5G0972715",
+     "side": "Male",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "отличается от чертежа",
+     "issue": "в чертеже №6 5K0972715: другой номер VAG (5G0 vs 5K0), проверить совместимость",
+     "best": {
+      "supplier": "QCLNC",
+      "article": "VW21052-1.5-11",
+      "price": 1.85,
+      "moq": 1000.0
+     }
+    },
+    {
+     "oem": "5K0972705",
+     "side": "Female",
+     "qty": 2,
+     "variant": "комплект",
+     "main": true,
+     "check": "есть в чертеже №6",
+     "issue": null,
+     "best": {
+      "supplier": "QCLNC",
+      "article": "VW21052-1.5-21",
+      "price": 1.95,
+      "moq": 1000.0
+     }
+    }
+   ]
+  }
+ ]
+}

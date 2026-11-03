@@ -8,6 +8,7 @@
 Запуск из корня репозитория:  python3 tools/build_upload.py
 Результат: export/Model_Electric_upload.xlsx
 """
+import json
 import os
 import re
 from collections import defaultdict
@@ -23,6 +24,8 @@ PLAN = os.path.join(ROOT, "sources", "Plan_razrabotok_Ozon.xlsx")
 PRICES = os.path.join(ROOT, "sources", "Svod_cen_postavshikov.xlsx")
 SUMMARY = os.path.join(ROOT, "specs", "Summary_all_drawings.xlsx")
 OUT = os.path.join(ROOT, "export", "Model_Electric_upload.xlsx")
+# Машиночитаемая версия для apps/spec-import-agent (этап «Свод цен»)
+OUT_JSON = os.path.join(ROOT, "export", "price_import.json")
 
 PRICE_SHEET = "Лист1 (2)"
 SUPPLIERS = ["Ylcn", "HD Connector", "JINGMING", "Star technology", "Jiangsu Xing Yao Electric",
@@ -178,7 +181,9 @@ def read_plan():
             continue
         fill = ws[f"C{r}"].fill
         approved = bool(fill and fill.fill_type and fill.fgColor.rgb == GREEN)
-        res.append(dict(row=r, group=group, brand=b, model=c, gen=clean(ws[f"D{r}"].value),
+        gen = clean(ws[f"D{r}"].value)
+        gen = re.sub(r"\s*-\s*", "-", gen) if gen else gen
+        res.append(dict(row=r, group=group, brand=b, model=c, gen=gen,
                         qty=ws[f"E{r}"].value, sum=ws[f"F{r}"].value, avg=num(ws[f"G{r}"].value),
                         kind=clean(ws[f"H{r}"].value), note=clean(ws[f"I{r}"].value), approved=approved))
     return res
@@ -216,7 +221,9 @@ def main():
 
     up_rows, up_fill, proj_rows, proj_fill, remarks = [], [], [], [], []
     uid = 0
+    json_projects = []
     for p in plan:
+        jlines = []
         drawings, variants, note = PLAN_MAP.get(p["row"], ([], [], ""))
         car = f"{p['brand']} {p['model']} {p['gen'] or ''}".strip()
         kit_cny, n_lines, n_noprice, n_mismatch = 0.0, 0, 0, 0
@@ -278,6 +285,10 @@ def main():
                             n_noprice += 1
                         if check in ("нет в чертеже", "отличается от чертежа"):
                             n_mismatch += 1
+                    jlines.append(dict(oem=ln["oem"], side=ln["side"], qty=ln["qty"], variant=variant, main=main_v,
+                                       check=check, issue="; ".join(issues) or None,
+                                       best=dict(supplier=best["sup"], article=best["art"], price=best["price"],
+                                                 moq=best["moq"]) if best else None))
                     up_rows.append([
                         uid, p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
                         ", ".join(map(str, drawings)) or None, variant, f"{blk['name']} (стр. {ln['row']})",
@@ -319,6 +330,13 @@ def main():
         else:
             ready = "Нет данных"
         share = round(kit_rub / p["avg"] * 100, 2) if kit_rub and p["avg"] else None
+        if p["approved"]:
+            json_projects.append(dict(
+                key=f"plan-{p['row']}", group=p["group"], brand=p["brand"], model=p["model"], gen=p["gen"],
+                drawings=drawings, ready=ready, missing="; ".join(missing) or None,
+                note="; ".join(x for x in (note, p["note"]) if x) or None,
+                sales=dict(qty=p["qty"], sum=p["sum"], avg=p["avg"]), kitCny=round(kit_cny, 4) if kit_rub else None,
+                kitRub=kit_rub, lines=[ln for ln in jlines if ln["oem"]]))
         proj_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
                           p["qty"], p["sum"], p["avg"], p["kind"], ", ".join(map(str, drawings)) or None,
                           ", ".join(dict.fromkeys(blocks[r]["name"] for r in kit_rows)) or None, n_lines or None,
@@ -406,6 +424,24 @@ def main():
     ], [40, 90])
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     wb.save(OUT)
+    offers, seen = [], set()
+    for blk in blocks.values():
+        for ln in blk["lines"]:
+            if not ln["oem"]:
+                continue
+            for o in ln["offers"]:
+                if o["price"] is None:
+                    continue
+                key = (norm(ln["oem"]), o["sup"], o["art"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                offers.append(dict(oem=ln["oem"], side=ln["side"], supplier=o["sup"], article=o["art"],
+                                   moq=int(o["moq"]) if o["moq"] else None, price=o["price"], note=o["note"] or None))
+    with open(OUT_JSON, "w", encoding="utf-8") as f:
+        json.dump(dict(generatedAt=date.today().isoformat(), currency="CNY", rate=rate, coef=coef,
+                       source=f"sources/Svod_cen_postavshikov.xlsx «{PRICE_SHEET}», sources/Plan_razrabotok_Ozon.xlsx",
+                       suppliers=SUPPLIERS, offers=offers, projects=json_projects), f, ensure_ascii=False, indent=1)
     print(f"Saved {OUT}: {len(up_rows)} строк загрузки, {len(proj_rows)} проектов, {len(offer_rows)} предложений, "
           f"{len(remarks)} замечаний")
 

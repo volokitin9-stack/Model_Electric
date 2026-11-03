@@ -37,7 +37,17 @@ export type SpecImportReport = {
     extra: number;
     removed: number;
     errors: number;
+    suppliersCreated?: number;
+    offersCreated?: number;
+    pricesUpdated?: number;
   };
+  prices?: Array<{
+    key: string;
+    title: string;
+    actions: string[];
+    errors: string[];
+    project?: { id?: string; name: string; article?: string | null };
+  }>;
 };
 
 let running = false;

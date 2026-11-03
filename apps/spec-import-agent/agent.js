@@ -13,8 +13,13 @@
  *   4. загружает сам чертёж — листы, разъёмы, распиновку, замечания —
  *      на вкладку «Электросхемы» проекта (целиком, если файл изменился).
  *
+ * Затем этап «Свод цен» (export/price_import.json, см. lib/prices.js):
+ * поставщики, кроссировки с ценами в CNY и позиции спецификаций
+ * согласованных проектов (основное предложение, плановая цена).
+ *
  * Запуск:  node agent.js [--apply] [--server url] [--api-key ключ] [--drawing N]
  *          [--config путь] [--specs папка] [--report файл.json] [--prune]
+ *          [--prices файл.json | --no-prices]
  *
  * Без --apply — только отчёт «что будет сделано», в базе ничего не меняется.
  */
@@ -25,6 +30,19 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { readSpecFile } from "./lib/readSpec.js";
 import { buildDrawingPlan, diffProjectComponents, matchProject, normalizeArticle } from "./lib/plan.js";
+import {
+  diffProjectLine,
+  lineComment,
+  lineStatus,
+  matchCatalog,
+  matchPriceProject,
+  nextSupplierCode,
+  offerArticle,
+  oemKey,
+  samePrice,
+  supplierByName,
+  uniqueLines,
+} from "./lib/prices.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
@@ -40,6 +58,8 @@ function parseArgs(argv) {
     else if (a === "--server") args.serverUrl = argv[++i];
     else if (a === "--api-key") args.apiKey = argv[++i];
     else if (a === "--report") args.reportPath = argv[++i];
+    else if (a === "--prices") args.pricesPath = argv[++i];
+    else if (a === "--no-prices") args.noPrices = true;
     else if (a === "--help" || a === "-h") args.help = true;
     else throw new Error(`Неизвестный аргумент: ${a} (см. --help)`);
   }
@@ -65,6 +85,12 @@ function loadConfig(args) {
     // project-map.json (в репозитории) + projectMap из config.json (локально, приоритетнее)
     projectMap: { ...shared.projectMap, ...(raw.projectMap ?? {}) },
     separateProjects: { ...shared.separateProjects, ...(raw.separateProjects ?? {}) },
+    // Привязка строк плана разработок («plan-<строка>») к существующим проектам — для этапа «Свод цен»
+    priceProjectMap: { ...shared.priceProjectMap, ...(raw.priceProjectMap ?? {}) },
+    pricesFile: path.resolve(
+      args.configPath && fs.existsSync(args.configPath) ? path.dirname(args.configPath) : HERE,
+      args.pricesPath ?? raw.pricesFile ?? path.join(HERE, "..", "..", "export", "price_import.json"),
+    ),
     responsible: raw.responsible ?? null,
   };
 }
@@ -136,10 +162,7 @@ async function main() {
       console.error(`  ✖ ${path.relative(config.specsFolder, f)}: ${e.message}`);
     }
   }
-  if (plans.length === 0) {
-    console.log("Нет спецификаций для обработки.");
-    return;
-  }
+  if (plans.length === 0) console.log("Нет спецификаций для обработки.");
 
   // --- справочники из API ---
   const projects = await api.get("/api/projects");
@@ -165,7 +188,10 @@ async function main() {
   }
 
   const report = { startedAt: new Date().toISOString(), apply: args.apply, server: config.serverUrl, drawings: [] };
-  const totals = { drawings: 0, projectsCreated: 0, catalogCreated: 0, catalogFilled: 0, added: 0, updated: 0, extra: 0, removed: 0, errors: 0 };
+  const totals = {
+    drawings: 0, projectsCreated: 0, catalogCreated: 0, catalogFilled: 0, added: 0, updated: 0, extra: 0, removed: 0, errors: 0,
+    suppliersCreated: 0, offersCreated: 0, pricesUpdated: 0,
+  };
   const catalogPlanned = new Set(); // в режиме отчёта не считать одно и то же новое комплектующее дважды
 
   for (const plan of plans) {
@@ -295,12 +321,16 @@ async function main() {
     }
   }
 
+  if (!args.noPrices && !args.drawings.length) await runPriceStage(api, args, config, report, totals);
+
   report.totals = totals;
   console.log(
     `\nИтого${args.apply ? "" : " (план)"}: проектов создано ${totals.projectsCreated}, ` +
       `каталог +${totals.catalogCreated} / дополнено ${totals.catalogFilled}, ` +
       `позиций спецификации +${totals.added} / изменено ${totals.updated} / удалено ${totals.removed} / лишних ${totals.extra}, ` +
-      `чертежей загружено/обновлено ${totals.drawings}, ошибок ${totals.errors}`,
+      `чертежей загружено/обновлено ${totals.drawings}, ` +
+      `свод цен: поставщиков +${totals.suppliersCreated}, кроссировок +${totals.offersCreated}, ` +
+      `цен обновлено ${totals.pricesUpdated}, ошибок ${totals.errors}`,
   );
   if (!args.apply) console.log("Ничего не записано. Для применения: node agent.js --apply");
   if (args.reportPath) {
@@ -308,6 +338,218 @@ async function main() {
     console.log(`Отчёт: ${args.reportPath}`);
   }
   if (totals.errors) process.exitCode = 1;
+}
+
+/**
+ * Этап «Свод цен»: поставщики → каталог → кроссировки с ценами → позиции
+ * спецификаций согласованных проектов. Повторный запуск на том же файле
+ * ничего не меняет: цена добавляется, только если отличается от текущей.
+ */
+async function runPriceStage(api, args, config, report, totals) {
+  if (!fs.existsSync(config.pricesFile)) {
+    console.log(`\nСвод цен: файл не найден (${config.pricesFile}) — этап пропущен`);
+    return;
+  }
+  const data = JSON.parse(fs.readFileSync(config.pricesFile, "utf8"));
+  console.log(`\nСвод цен: ${config.pricesFile} (от ${data.generatedAt}, цены в ${data.currency})`);
+  report.prices = [];
+  const section = (title, project) => {
+    const r = { key: title, title, actions: [], errors: [], project };
+    report.prices.push(r);
+    console.log(`\n${title}`);
+    return r;
+  };
+  const logTo = (r) => (s) => {
+    r.actions.push(s);
+    console.log(`    ${s}`);
+  };
+
+  const [projects, drawings, categories, suppliers, xrefs] = await Promise.all([
+    api.get("/api/projects"),
+    api.get("/api/drawings"),
+    api.get("/api/categories"),
+    api.get("/api/suppliers"),
+    api.get("/api/cross-references"),
+  ]);
+  const catalog = await api.get("/api/components");
+  const planned = new Set(); // ключи сущностей, уже учтённых в плане (режим отчёта)
+  let fakeId = 0;
+  const fake = (prefix) => `planned:${prefix}:${++fakeId}`;
+
+  // 1. поставщики
+  const gen = section("Поставщики и цены");
+  const log = logTo(gen);
+  const supplierIds = new Map();
+  for (const name of data.suppliers) {
+    let s = supplierByName(suppliers, name);
+    if (!s) {
+      const code = nextSupplierCode(suppliers);
+      log(`поставщик + ${name} [${code}], Китай, CNY`);
+      totals.suppliersCreated++;
+      s = args.apply
+        ? await api.post("/api/suppliers", { code, name, country: "Китай", defaultCurrency: "CNY", comment: "Из свода цен поставщиков разъёмов" })
+        : { id: fake("supplier"), code, name };
+      suppliers.push(s);
+    }
+    supplierIds.set(name, s.id);
+  }
+
+  // 2. каталог: OEM из свода, которых нет среди позиций чертежей
+  let housingCat = categories.find((c) => c.name.toLowerCase() === "корпуса разъёмов")?.id ?? null;
+  const componentsFor = async (oem, side) => {
+    let hit = matchCatalog(catalog, oem);
+    if (hit.length) return hit;
+    log(`каталог + ${oem} — разъём (${side}) из свода цен`);
+    totals.catalogCreated++;
+    if (!args.apply) {
+      const c = { id: fake("component"), internalArticle: oem };
+      catalog.push(c);
+      return [c];
+    }
+    if (!housingCat) housingCat = (await api.post("/api/categories", { name: "Корпуса разъёмов" })).id;
+    const c = await api.post("/api/components", {
+      internalArticle: oem,
+      name: `Разъём ${oem} (${side})`,
+      categoryId: housingCat,
+      description: "OEM-номер из свода цен поставщиков",
+      comment: "Создано этапом «Свод цен»: в чертежах этого номера нет",
+    });
+    catalog.push(c);
+    return [c];
+  };
+
+  // 3. кроссировки и цены
+  const offerIds = new Map(); // `${oemKey}|${supplier}|${article}` -> [xrefId по каждому компоненту]
+  for (const offer of data.offers) {
+    try {
+      const comps = await componentsFor(offer.oem, offer.side);
+      const article = offerArticle(offer);
+      const supplierId = supplierIds.get(offer.supplier);
+      const ids = [];
+      for (const comp of comps) {
+        const existing = xrefs.find(
+          (x) => x.supplier.id === supplierId && x.component.id === comp.id && normalizeArticle(x.supplierArticle) === normalizeArticle(article),
+        );
+        const what = `${offer.supplier}: ${article} → ${comp.internalArticle}, ${offer.price} CNY${offer.moq ? `, MOQ ${offer.moq}` : ""}`;
+        if (!existing) {
+          log(`кроссировка + ${what}${offer.article ? "" : " (артикул поставщика не указан — записан OEM)"}`);
+          totals.offersCreated++;
+          let x = { id: fake("xref") };
+          if (args.apply) {
+            x = await api.post("/api/cross-references", {
+              supplierId,
+              componentId: comp.id,
+              supplierArticle: article,
+              price: offer.price,
+              currency: "CNY",
+              minimumOrderQuantity: offer.moq ?? null,
+            });
+          }
+          xrefs.push({ id: x.id, supplier: { id: supplierId }, component: { id: comp.id }, supplierArticle: article, currentPrice: { price: offer.price, currency: "CNY", minimumOrderQuantity: offer.moq ?? null } });
+          ids.push(x.id);
+        } else {
+          if (!samePrice(existing.currentPrice, offer)) {
+            log(`цена ~ ${what} (было ${existing.currentPrice ? `${existing.currentPrice.price} ${existing.currentPrice.currency}` : "—"})`);
+            totals.pricesUpdated++;
+            if (args.apply) {
+              await api.post(`/api/cross-references/${existing.id}/price`, { price: offer.price, currency: "CNY", minimumOrderQuantity: offer.moq ?? null });
+            }
+            existing.currentPrice = { price: offer.price, currency: "CNY", minimumOrderQuantity: offer.moq ?? null };
+          }
+          ids.push(existing.id);
+        }
+      }
+      const key = `${oemKey(offer.oem)}|${offer.supplier}|${offer.article ?? ""}`;
+      offerIds.set(key, comps.map((c, i) => ({ componentId: c.id, xrefId: ids[i] })));
+    } catch (e) {
+      totals.errors++;
+      gen.errors.push(`${offer.oem} / ${offer.supplier}: ${e.message}`);
+      console.error(`    ✖ ${offer.oem} / ${offer.supplier}: ${e.message}`);
+    }
+  }
+  if (!gen.actions.length) log("без изменений");
+
+  // 4. согласованные проекты: спецификация, основное предложение, плановая цена
+  const touched = new Map(); // projectId -> Set(componentId), если несколько строк плана ведут в один проект
+  for (const entry of data.projects) {
+    const title = `${entry.brand} ${entry.model}${entry.gen ? ` ${entry.gen}` : ""}`;
+    const r = section(`${title} — ${entry.ready}`);
+    const plog = logTo(r);
+    try {
+      const m = matchPriceProject(projects, drawings, entry, config.priceProjectMap);
+      let project = m.project;
+      if (m.by === "map" && !project) throw new Error(`в priceProjectMap указан проект "${m.mappedTo}", но его нет в системе`);
+      if (m.by === "drawing-pending") {
+        plog(`проект будет создан из чертежа №${m.drawingNo} — цены подставятся при следующем запуске`);
+        continue;
+      }
+      if (project) {
+        const how = { map: "привязка из project-map.json", drawing: `по чертежу №${m.drawingNo}`, article: "по артикулу", name: "по названию" }[m.by];
+        plog(`проект (${how}): ${project.name} [${project.article ?? project.id}]`);
+      } else {
+        plog(`создать проект: ${m.planned.name} [${m.planned.article}]`);
+        totals.projectsCreated++;
+        project = args.apply
+          ? await api.post("/api/projects", { name: m.planned.name, article: m.planned.article, responsible: config.responsible })
+          : { id: fake("project"), name: m.planned.name, article: m.planned.article };
+        projects.push(project);
+      }
+      r.project = { id: project.id, name: project.name, article: project.article };
+      if (entry.kitRub != null) plog(`разъёмы на комплект: ${entry.kitCny} CNY ≈ ${entry.kitRub} ₽ (курс ${data.rate} × ${data.coef})`);
+      if (entry.sales?.qty) plog(`продажи Ozon: ${entry.sales.qty} шт на ${entry.sales.sum} ₽, ср. цена ${Math.round(entry.sales.avg)} ₽`);
+      if (entry.missing) plog(`⚠ ${entry.missing}`);
+      if (entry.note) plog(`примечание: ${entry.note}`);
+
+      const isReal = !String(project.id).startsWith("planned:");
+      const current = isReal ? await api.get(`/api/projects/${project.id}/components`) : [];
+      const done = touched.get(project.id) ?? new Set();
+      touched.set(project.id, done);
+      for (const line of uniqueLines(entry.lines)) {
+        const comps = matchCatalog(catalog, line.oem);
+        const offers = line.best ? offerIds.get(`${oemKey(line.oem)}|${line.best.supplier}|${line.best.article ?? ""}`) ?? [] : [];
+        for (const comp of comps) {
+          if (done.has(comp.id)) continue;
+          done.add(comp.id);
+          const xrefId = offers.find((o) => o.componentId === comp.id)?.xrefId ?? null;
+          const row = current.find((c) => c.componentId === comp.id || c.component?.id === comp.id);
+          if (!row) {
+            const status = lineStatus(line);
+            plog(`спецификация + ${comp.internalArticle} × ${line.qty} (${status})${line.main ? "" : " — альтернативный вариант"}${line.best ? `, ${line.best.supplier} ${line.best.price} CNY` : ", без цены"}`);
+            totals.added++;
+            if (args.apply && isReal) {
+              const pc = await api.post(`/api/projects/${project.id}/components`, {
+                componentId: comp.id,
+                quantity: line.qty,
+                status,
+                comment: lineComment(line),
+                plannedPrice: line.best?.price ?? null,
+                plannedCurrency: line.best ? "CNY" : null,
+              });
+              if (xrefId && !String(xrefId).startsWith("planned:")) {
+                await api.patch(`/api/projects/${project.id}/components/${pc.id}`, { primaryOfferId: xrefId });
+              }
+            }
+            continue;
+          }
+          const patch = diffProjectLine(row, line, xrefId && !String(xrefId).startsWith("planned:") ? xrefId : null);
+          if (Object.keys(patch).length) {
+            const parts = [];
+            if (patch.primaryOfferId) parts.push(`основное предложение ${line.best.supplier}`);
+            if (patch.plannedPrice != null) parts.push(`плановая цена ${patch.plannedPrice} CNY`);
+            if (patch.comment) parts.push("комментарий");
+            plog(`спецификация ~ ${comp.internalArticle}: ${parts.join(", ")}`);
+            totals.updated++;
+            if (args.apply) await api.patch(`/api/projects/${project.id}/components/${row.id}`, patch);
+          }
+        }
+      }
+      if (r.actions.every((a) => !a.startsWith("спецификация"))) plog("спецификация: без изменений");
+    } catch (e) {
+      totals.errors++;
+      r.errors.push(e.message);
+      console.error(`    ✖ ошибка: ${e.message}`);
+    }
+  }
 }
 
 main().catch((e) => {
