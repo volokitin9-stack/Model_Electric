@@ -2,6 +2,7 @@ import type {
   ChangeLogEntry,
   Component,
   ComponentCategory,
+  ConnectorSearchResult,
   CrossReference,
   ExportHistoryEntry,
   ExportPreview,
@@ -90,6 +91,9 @@ export const api = {
   // --- Этап 2 --------------------------------------------------------
 
   listProjectDrawings: (projectId: string) => request<ProjectDrawing[]>(`/projects/${projectId}/drawings`),
+
+  // "Откуда этот разъём/пин" — поиск по артикулу среди всех чертежей.
+  searchConnectors: (article: string) => request<ConnectorSearchResult>(`/drawings/search?article=${encodeURIComponent(article)}`),
 
   // Кнопка "Обновить данные" на дашборде — сервер сам запускает
   // spec-import-agent; apply:false только показывает план.

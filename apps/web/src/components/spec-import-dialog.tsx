@@ -121,6 +121,11 @@ export function SpecImportDialog({ open, onOpenChange }: { open: boolean; onOpen
               {applied ? (
                 <p className="rounded-md border border-[var(--status-done-fg)] bg-[var(--status-done-bg)] p-3 text-sm">
                   Данные записаны в базу.
+                  {report.relink && (
+                    <span className="block text-xs opacity-80">
+                      Связей с каталогом обновлено: разъёмов {report.relink.connectorsLinked}, пинов {report.relink.pinsLinked}.
+                    </span>
+                  )}
                 </p>
               ) : (
                 <p className="text-xs text-muted-foreground">

@@ -5,6 +5,7 @@ import { ProjectPage } from "@/pages/project-page";
 import { JournalPage } from "@/pages/journal-page";
 import { SuppliersPage } from "@/pages/suppliers-page";
 import { SupplierDetailPage } from "@/pages/supplier-detail-page";
+import { ConnectorSearchPage } from "@/pages/connector-search-page";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/journal" element={<JournalPage />} />
         <Route path="/suppliers" element={<SuppliersPage />} />
         <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
+        <Route path="/connectors" element={<ConnectorSearchPage />} />
       </Route>
     </Routes>
   );

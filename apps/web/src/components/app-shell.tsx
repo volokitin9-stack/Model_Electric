@@ -1,10 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { LayoutDashboard, ScrollText, Truck, Zap } from "lucide-react";
+import { Cable, LayoutDashboard, ScrollText, Truck, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { to: "/", label: "Проекты", icon: LayoutDashboard, end: true },
   { to: "/suppliers", label: "Поставщики", icon: Truck, end: false },
+  { to: "/connectors", label: "Разъёмы", icon: Cable, end: false },
   { to: "/journal", label: "Журнал", icon: ScrollText, end: false },
 ];
 

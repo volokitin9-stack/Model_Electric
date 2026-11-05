@@ -348,4 +348,26 @@ export type SpecImportReport = {
     errors: string[];
     project?: { id?: string; name: string; article?: string | null };
   }>;
+  relink?: { connectorsLinked: number; pinsLinked: number };
+};
+
+// --- Поиск "откуда этот разъём/пин" (связь с общим каталогом
+// комплектующих через DrawingConnector/DrawingPin.componentId) ---
+
+export type ConnectorSearchResultGroup = {
+  projectId: string;
+  projectName: string;
+  projectArticle: string | null;
+  drawingNo: number;
+  brand: string;
+  model: string;
+  connectors: Array<{ sheet: string; designator: string; housingPn: string | null; manufacturer: string | null; positions: string | null }>;
+  pins: Array<{ sheet: string; connector: string; contactPn: string | null; pin: string | null; wire: string | null; color: string | null }>;
+};
+
+export type ConnectorSearchResult = {
+  query: string;
+  component: Component | null;
+  componentMatches: Component[];
+  results: ConnectorSearchResultGroup[];
 };

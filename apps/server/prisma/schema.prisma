@@ -89,6 +89,8 @@ model ComponentCatalog {
 
   projectComponents ProjectComponent[]
   crossReferences   SupplierCrossReference[]
+  drawingConnectors DrawingConnector[]
+  drawingPins       DrawingPin[]
 
   @@index([categoryId])
 }
@@ -339,6 +341,11 @@ model ProjectDrawing {
   @@index([projectId])
 }
 
+// componentId — связь с общим каталогом комплектующих по нормализованному
+// housingPn (см. normalizeArticle в src/normalize.ts): один и тот же
+// разъём, встретившийся в разных чертежах/моделях, указывает на одну и
+// ту же запись каталога — цену/поставщика ищем один раз, не на каждую
+// модель заново (проставляется сервером при PUT, см. routes/drawings.ts).
 model DrawingConnector {
   id           String  @id @default(cuid())
   drawingId    String
@@ -356,9 +363,15 @@ model DrawingConnector {
   status       String?
   note         String?
 
+  componentId  String?
+  component    ComponentCatalog? @relation(fields: [componentId], references: [id])
+
   @@index([drawingId])
+  @@index([componentId])
 }
 
+// componentId — связь с общим каталогом комплектующих по нормализованному
+// contactPn (тот же принцип, что у DrawingConnector.componentId выше).
 model DrawingPin {
   id                String  @id @default(cuid())
   drawingId         String
@@ -377,7 +390,11 @@ model DrawingPin {
   crossSectionCheck String?
   note              String?
 
+  componentId       String?
+  component         ComponentCatalog? @relation(fields: [componentId], references: [id])
+
   @@index([drawingId])
+  @@index([componentId])
 }
 
 model DrawingNote {

@@ -4,6 +4,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { relinkDrawingsToCatalog } from "./routes/drawings.js";
 
 // Запускает уже проверенный apps/spec-import-agent/agent.js как дочерний
 // процесс вместо повторной реализации его логики сопоставления
@@ -49,6 +50,7 @@ export type SpecImportReport = {
     errors: string[];
     project?: { id?: string; name: string; article?: string | null };
   }>;
+  relink?: { connectorsLinked: number; pinsLinked: number };
 };
 
 let running = false;
@@ -98,7 +100,15 @@ export async function runSpecImportAgent(apply: boolean): Promise<SpecImportRepo
       throw new Error(`Агент завершился без отчёта (код выхода ${exitCode}): ${tail || "нет вывода"}`);
     }
     const raw = await fsp.readFile(reportPath, "utf8");
-    return JSON.parse(raw) as SpecImportReport;
+    const report = JSON.parse(raw) as SpecImportReport;
+    // Каталог мог пополниться новыми артикулами уже в этом прогоне (этап
+    // «Свод цен» идёт после загрузки чертежей) — пересчитываем связи
+    // сразу, чтобы поиск "откуда этот разъём" не отставал от того же
+    // прогона.
+    if (apply) {
+      report.relink = await relinkDrawingsToCatalog();
+    }
+    return report;
   } finally {
     fs.rm(reportPath, { force: true }, () => {});
     running = false;
