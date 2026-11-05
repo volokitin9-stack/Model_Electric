@@ -121,6 +121,19 @@ export function CrossReferenceTable({
         filterFn: textContains as any,
       },
       {
+        id: "models",
+        accessorKey: "models",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            Модели
+            <ColumnFilter column={column} kind="text" />
+          </div>
+        ),
+        size: 220,
+        filterFn: textContains as any,
+        cell: ({ getValue }) => <span className="text-muted-foreground">{(getValue() as string) || "—"}</span>,
+      },
+      {
         id: "supplierCode",
         accessorKey: "supplierCode",
         header: ({ column }) => (
@@ -262,19 +275,6 @@ export function CrossReferenceTable({
             </span>
           );
         },
-      },
-      {
-        id: "models",
-        accessorKey: "models",
-        header: ({ column }) => (
-          <div className="flex items-center">
-            Модели
-            <ColumnFilter column={column} kind="text" />
-          </div>
-        ),
-        size: 220,
-        filterFn: textContains as any,
-        cell: ({ getValue }) => <span className="text-muted-foreground">{(getValue() as string) || "—"}</span>,
       },
     ],
     [onEditPrice],
