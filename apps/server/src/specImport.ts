@@ -40,6 +40,8 @@ export type SpecImportReport = {
     suppliersCreated?: number;
     offersCreated?: number;
     pricesUpdated?: number;
+    competitorsCreated?: number;
+    competitorsUpdated?: number;
   };
   prices?: Array<{
     key: string;

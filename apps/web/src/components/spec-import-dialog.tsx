@@ -70,10 +70,11 @@ export function SpecImportDialog({ open, onOpenChange }: { open: boolean; onOpen
                 <Stat label="Ошибок" value={report.totals.errors} warn={report.totals.errors > 0} />
               </div>
               {report.prices && (
-                <div className="grid grid-cols-3 gap-2 text-sm">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                   <Stat label="Поставщиков +" value={report.totals.suppliersCreated ?? 0} />
                   <Stat label="Кроссировок +" value={report.totals.offersCreated ?? 0} />
                   <Stat label="Цен обновлено" value={report.totals.pricesUpdated ?? 0} />
+                  <Stat label="Продавцов Ozon +" value={report.totals.competitorsCreated ?? 0} />
                 </div>
               )}
 

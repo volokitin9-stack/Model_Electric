@@ -169,6 +169,60 @@ def best_offer(offers):
     return min(pool, key=lambda o: o["price"]) if pool else None
 
 
+# Строки «Плана разработок», у которых модель/поколение в «Исходнике» Ozon записаны иначе
+OZON_ALIAS = {
+    "Niva Travel Classic / Comfort / Black|2020-2023": [("Niva Travel", "2020-2023")],
+    "Niva Travel Luxe / Luxe Off-road|2021-2025": [("Niva Travel", "2021-2025")],
+    "Niva Travel|2021-2023": [("Niva Travel", "2021-2023")],
+    "Granta SE|2011-": [("Granta", "2011-")],
+    "Rio|2017-2022": [("Rio SD", "2017-2022")],
+    "Tank 300|2021-": [("300", "2021-")],
+    "Solaris|2010-2017": [("Solaris SD", "2010-2017"), ("Solaris HB", "2010-2017")],
+    "Land Cruiser 150 Prado|2009-2024": [("Land Cruiser 150 Prado (левый руль)", "2009-2024"),
+                                         ("Land Cruiser 150 Prado (правый руль)", "2009-2024")],
+}
+OZON_TOP = 5  # сколько продавцов на проект передаётся в приложение
+
+
+def nospace(v):
+    return re.sub(r"\s+", "", str(v or ""))
+
+
+def read_ozon():
+    """Лист «Исходник»: товары Ozon по моделям (продавец, бренд, заказы, цены). Дубли ссылок убираются."""
+    ws = load_workbook(PLAN, data_only=True, read_only=True)["Исходник"]
+    rows, seen = [], set()
+    for r in ws.iter_rows(min_row=3, values_only=True):
+        r = r[1:]
+        if not r[0] or not r[4] or r[4] in seen:
+            continue
+        seen.add(r[4])
+        rows.append(dict(title=clean(r[0]), brand=clean(r[1]), model=clean(r[2]), gen=nospace(r[3]), url=clean(r[4]),
+                         seller=clean(r[5]), maker=clean(r[6]), category=clean(r[7]), sum=num(r[8]) or 0,
+                         qty=num(r[9]) or 0, avg=num(r[10]), min=num(r[11]), scheme=clean(r[12]), created=clean(r[14])))
+    return rows
+
+
+def ozon_for(p, ozon):
+    keys = OZON_ALIAS.get(f"{p['model']}|{nospace(p['gen'])}", [(p["model"], nospace(p["gen"]))])
+    keys = {(m, nospace(g)) for m, g in keys}
+    hit = [o for o in ozon if (o["brand"] or "").lower() == p["brand"].lower() and (o["model"], o["gen"]) in keys]
+    return sorted(hit, key=lambda o: (-o["qty"], -o["sum"]))
+
+
+def rub(v):
+    return f"{v:,.0f}".replace(",", " ") if v is not None else "—"
+
+
+def ozon_comment(o, rank):
+    parts = [f"Ozon #{rank}: заказано {o['qty']:g} шт на {rub(o['sum'])} ₽"]
+    if o["min"]:
+        parts.append(f"мин. цена {rub(o['min'])} ₽")
+    parts += [x for x in (o["maker"] and f"бренд {o['maker']}", o["category"], o["scheme"],
+                          o["created"] and f"карточка с {o['created']}") if x]
+    return " · ".join(parts)
+
+
 def read_plan():
     ws = load_workbook(PLAN, data_only=True)["План разработок"]
     group, res = None, []
@@ -219,6 +273,8 @@ def main():
     k = rate * coef
     dpn = drawing_pns()
     plan = read_plan()
+    ozon = read_ozon()
+    ozon_rows = []
 
     up_rows, up_fill, proj_rows, proj_fill, remarks = [], [], [], [], []
     uid = 0
@@ -336,14 +392,24 @@ def main():
             ready = "Нет данных"
         share = round(kit_rub / p["avg"] * 100, 2) if kit_rub and p["avg"] else None
         if p["approved"]:
+            top = ozon_for(p, ozon)[:OZON_TOP]
             json_projects.append(dict(
+                ozon=[dict(seller=o["seller"], product=o["title"], url=o["url"], price=o["avg"], qty=o["qty"],
+                           sum=o["sum"], comment=ozon_comment(o, i + 1)) for i, o in enumerate(top)],
                 key=f"plan-{p['row']}", group=p["group"], brand=p["brand"], model=p["model"], gen=p["gen"],
                 drawings=drawings, ready=ready, missing="; ".join(missing) or None,
                 note="; ".join(x for x in (note, p["note"]) if x) or None,
                 sales=dict(qty=p["qty"], sum=p["sum"], avg=p["avg"]), kitCny=round(kit_cny, 4) if kit_rub else None,
                 kitRub=kit_rub, fileKitRub=file_kit, lines=[ln for ln in jlines if ln["oem"]]))
+        sellers = ozon_for(p, ozon)
+        for i, o in enumerate(sellers):
+            ozon_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет", i + 1,
+                              o["seller"], o["maker"], o["title"], o["category"], o["qty"], o["sum"], o["avg"], o["min"],
+                              o["scheme"], o["created"], o["url"]])
+        top_seller = (f"{sellers[0]['seller']} — {sellers[0]['qty']:g} шт, {rub(sellers[0]['avg'])} ₽"
+                      if sellers else None)
         proj_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
-                          p["qty"], p["sum"], p["avg"], p["kind"], ", ".join(map(str, drawings)) or None,
+                          p["qty"], p["sum"], p["avg"], top_seller, len(sellers) or None, p["kind"], ", ".join(map(str, drawings)) or None,
                           ", ".join(dict.fromkeys(blocks[r]["name"] for r in kit_rows)) or None, n_lines or None,
                           round(kit_cny, 3) if kit_rub else None, kit_rub, file_kit, "; ".join(alt_costs) or None, bt, share,
                           ready,
@@ -406,17 +472,23 @@ def main():
                 up_fill, first=True)
     write_sheet(wb, "Проекты",
                 ["Группа", "Марка", "Модель", "Поколение", "Согласовано", "Заказано, шт", "Заказано, ₽",
-                 "Ср. цена продажи, ₽", "Тип проводки", "№ чертежа", "Блок свода цен", "Позиций разъёмов",
+                 "Ср. цена продажи, ₽", "Топ-продавец Ozon (заказано, ср. цена)",
+                 "Товаров на Ozon", "Тип проводки", "№ чертежа", "Блок свода цен", "Позиций разъёмов",
                  "Разъёмы на комплект, CNY", "Разъёмы на комплект, ₽", "Итог на комплект по своду (как в файле), ₽",
                  "Альтернативный вариант, ₽",
                  "Цена первичный анализ, ₽",
                  "Доля разъёмов в цене продажи, %", "Готовность", "Чего не хватает", "Комментарий"],
-                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 30, 9, 26, 9, 11, 11, 13, 40, 11, 11, 15, 40, 50], proj_fill)
+                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 34, 9, 30, 9, 26, 9, 11, 11, 13, 40, 11, 11, 15, 40, 50], proj_fill)
     write_sheet(wb, "Цены поставщиков",
                 ["Блок свода цен", "Строка", "Сторона", "Роль", "OEM артикул", "Кол-во на комплект", "Поставщик",
                  "Артикул поставщика", "MOQ", "Цена разъёма (корпус + пины + допы), CNY", "Сумма на комплект, CNY",
                  "Итого на комплект проводки (из свода), CNY", "Лучшая", "Замечание"],
                 offer_rows, [26, 7, 8, 9, 18, 9, 24, 24, 7, 12, 11, 13, 8, 35])
+    write_sheet(wb, "Ozon продавцы",
+                ["Группа", "Марка", "Модель", "Поколение", "Согласовано", "Место", "Продавец", "Бренд", "Товар",
+                 "Категория", "Заказано, шт", "Заказано, ₽", "Ср. цена, ₽", "Мин. цена, ₽", "Схема", "Карточка с",
+                 "Ссылка"], ozon_rows, [10, 11, 26, 12, 11, 7, 26, 14, 40, 26, 10, 12, 11, 11, 9, 12, 40],
+                [OKF if r[5] == 1 else None for r in ozon_rows])
     write_sheet(wb, "Замечания", ["Раздел", "Объект", "Замечание"], remarks, [12, 30, 100])
     write_sheet(wb, "Параметры", ["Параметр", "Значение"], [
         ["Дата выгрузки", date.today().isoformat()],

@@ -128,3 +128,32 @@ test("комментарий из чертежа сохраняет хвост �
   const changed = diffProjectComponents([row(`Чертёж №4: старое${PRICE_TAIL} входит в цену`)], [item]);
   assert.equal(changed.update[0].patch.comment, `Чертёж №4: новое${PRICE_TAIL} входит в цену`);
 });
+
+test("Ozon: объединение топа по проекту и правила обновления конкурентов", async () => {
+  const { mergeOzon, diffCompetitors } = await import("../lib/prices.js");
+  const o = (url, qty, seller = "S") => ({ url, qty, sum: qty * 100, seller, product: `P${url}`, price: 100, comment: `Ozon #9: заказано ${qty} шт` });
+  const top = mergeOzon([[o("a", 5), o("b", 46)], [o("b", 46), o("c", 1)]], 2);
+  assert.deepEqual(top.map((x) => x.url), ["b", "a"]);
+  assert.match(top[0].comment, /^Ozon #1:/);
+  assert.match(top[1].comment, /^Ozon #2:/);
+
+  const current = [
+    { id: "1", productUrl: "b", sellerName: "S", productName: "Pb", price: "100", comment: top[0].comment }, // без изменений
+    { id: "2", productUrl: "a", sellerName: "S", productName: "Pa", price: "90", comment: "Ozon #3: старое" }, // своё — обновить
+    { id: "3", productUrl: "x", sellerName: "Ручной", productName: "X", price: null, comment: "мой комментарий" }, // ручное — не трогать
+    { id: "4", productUrl: "z", sellerName: "S", productName: "Pz", price: "1", comment: "Ozon #5: выпал" }, // своё, выпал — удалить
+  ];
+  const d = diffCompetitors(current, top);
+  assert.equal(d.create.length, 0);
+  assert.deepEqual(d.update.map((u) => u.row.id), ["2"]);
+  assert.deepEqual(d.remove.map((r) => r.id), ["4"]);
+  assert.equal(diffCompetitors([], top).create.length, 2);
+});
+
+test("export/price_import.json: у согласованных проектов есть топ продавцов Ozon", { skip: !fs.existsSync(PRICES) }, () => {
+  const data = JSON.parse(fs.readFileSync(PRICES, "utf8"));
+  const niva = data.projects.find((p) => p.brand === "Chevrolet" && p.model === "Niva");
+  assert.ok(niva.ozon.length > 0 && niva.ozon.length <= 5);
+  assert.ok(niva.ozon.every((x) => x.url.startsWith("https://www.ozon.ru/") && x.seller));
+  assert.ok(niva.ozon[0].qty >= niva.ozon.at(-1).qty);
+});

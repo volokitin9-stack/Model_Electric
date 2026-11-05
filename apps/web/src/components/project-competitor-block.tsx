@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Pencil } from "lucide-react";
+import { ExternalLink, Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -25,14 +25,27 @@ function toForm(c?: ProjectCompetitor | null): FormState {
   };
 }
 
+// Место в топе Ozon, которое проставляет spec-import-agent (комментарий «Ozon #N: …»);
+// записи, добавленные вручную, идут первыми.
+function ozonRank(c: ProjectCompetitor): number {
+  const m = /^Ozon #(\d+):/.exec(c.comment ?? "");
+  return m ? Number(m[1]) : 0;
+}
+
 export function ProjectCompetitorBlock({ projectId }: { projectId: string }) {
   const qc = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<FormState>(toForm());
   const [error, setError] = useState<string | null>(null);
+  const [current, setCurrent] = useState<ProjectCompetitor | null>(null);
 
   const query = useQuery({ queryKey: ["project-competitors", projectId], queryFn: () => api.listProjectCompetitors(projectId) });
-  const current = query.data?.[0] ?? null;
+  const list = [...(query.data ?? [])].sort((a, b) => ozonRank(a) - ozonRank(b));
+
+  function openForm(c: ProjectCompetitor | null) {
+    setCurrent(c);
+    setFormOpen(true);
+  }
 
   useEffect(() => {
     if (formOpen) {
@@ -72,33 +85,45 @@ export function ProjectCompetitorBlock({ projectId }: { projectId: string }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Топ-продавец Ozon</div>
-        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setFormOpen(true)}>
-          <Pencil className="h-3 w-3" /> {current ? "Изменить" : "Добавить"}
+        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Топ-продавцы Ozon{list.length > 1 ? ` (${list.length})` : ""}
+        </div>
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => openForm(null)}>
+          <Plus className="h-3 w-3" /> Добавить
         </Button>
       </div>
 
-      {current ? (
-        <div className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="font-medium">{current.sellerName}</span>
-            {current.price && (
-              <span className="tabular font-semibold">
-                {current.price} {current.currency}
+      {list.length > 0 ? (
+        list.map((c) => (
+          <div key={c.id} className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-3 text-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-medium">
+                {ozonRank(c) > 0 && <span className="mr-1 text-muted-foreground">#{ozonRank(c)}</span>}
+                {c.sellerName}
               </span>
-            )}
+              <span className="flex items-center gap-1">
+                {c.price && (
+                  <span className="tabular font-semibold">
+                    {c.price} {c.currency}
+                  </span>
+                )}
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => openForm(c)} aria-label="Изменить">
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              </span>
+            </div>
+            <div className="text-muted-foreground">{c.productName}</div>
+            {c.comment && <div className="text-xs text-muted-foreground">{c.comment.replace(/^Ozon #\d+:\s*/, "")}</div>}
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Проверено: {fmtDate(c.checkedAt)}</span>
+              {c.productUrl && (
+                <a href={c.productUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                  Открыть на Ozon <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
+            </div>
           </div>
-          <div className="text-muted-foreground">{current.productName}</div>
-          {current.comment && <div className="text-xs text-muted-foreground">{current.comment}</div>}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Проверено: {fmtDate(current.checkedAt)}</span>
-            {current.productUrl && (
-              <a href={current.productUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
-                Открыть на Ozon <ExternalLink className="h-3 w-3" />
-              </a>
-            )}
-          </div>
-        </div>
+        ))
       ) : (
         <p className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
           Нет данных о конкурентах на Ozon — добавьте вручную.
@@ -108,7 +133,7 @@ export function ProjectCompetitorBlock({ projectId }: { projectId: string }) {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Топ-продавец на Ozon</DialogTitle>
+            <DialogTitle>{current ? "Продавец на Ozon" : "Новый продавец на Ozon"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="grid grid-cols-2 gap-3">

@@ -162,3 +162,49 @@ export function coveredContacts(connectors, pricedHousingKeys) {
 
 export const INCLUDED_COMMENT = (housings) =>
   `${PRICE_COMMENT_PREFIX} входит в цену разъёма ${housings.join(", ")} (цена свода = разъём + пины + допы)`;
+
+/** Комментарий конкурента, который пишет этот этап: «Ozon #<место>: …». */
+export const OZON_PREFIX = /^Ozon #(\d+):/;
+
+/**
+ * Топ продавцов Ozon проекта: несколько строк плана могут вести в один
+ * проект (Granta SE и LB → чертёж №4) — объединяем по ссылке, сортируем
+ * по заказам и заново нумеруем места.
+ */
+export function mergeOzon(lists, top = 5) {
+  const byUrl = new Map();
+  for (const o of lists.flat()) if (o?.url && !byUrl.has(o.url)) byUrl.set(o.url, o);
+  return [...byUrl.values()]
+    .sort((a, b) => b.qty - a.qty || b.sum - a.sum)
+    .slice(0, top)
+    .map((o, i) => ({ ...o, comment: o.comment.replace(OZON_PREFIX, `Ozon #${i + 1}:`) }));
+}
+
+/**
+ * Что сделать с конкурентами проекта: создать новые, обновить свои
+ * (комментарий «Ozon #…»), удалить свои, выпавшие из топа. Добавленные
+ * вручную (без «Ozon #») не трогаем.
+ */
+export function diffCompetitors(current, wanted) {
+  const create = [];
+  const update = [];
+  const keep = new Set();
+  for (const w of wanted) {
+    const row = current.find((c) => c.productUrl === w.url);
+    const payload = { sellerName: w.seller, productName: w.product, productUrl: w.url, price: w.price, currency: "RUB", comment: w.comment };
+    if (!row) {
+      create.push(payload);
+      continue;
+    }
+    keep.add(row.id);
+    if (!OZON_PREFIX.test(row.comment ?? "")) continue; // запись правили вручную — не трогаем
+    const same =
+      row.sellerName === payload.sellerName &&
+      row.productName === payload.productName &&
+      Number(row.price ?? NaN) === Number(payload.price ?? NaN) &&
+      row.comment === payload.comment;
+    if (!same) update.push({ row, payload });
+  }
+  const remove = current.filter((c) => !keep.has(c.id) && OZON_PREFIX.test(c.comment ?? ""));
+  return { create, update, remove };
+}

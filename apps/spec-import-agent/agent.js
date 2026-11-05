@@ -34,11 +34,13 @@ import {
   INCLUDED_COMMENT,
   PRICE_COMMENT_PREFIX,
   coveredContacts,
+  diffCompetitors,
   diffProjectLine,
   lineComment,
   lineStatus,
   matchCatalog,
   matchPriceProject,
+  mergeOzon,
   nextSupplierCode,
   offerArticle,
   oemKey,
@@ -193,7 +195,7 @@ async function main() {
   const report = { startedAt: new Date().toISOString(), apply: args.apply, server: config.serverUrl, drawings: [] };
   const totals = {
     drawings: 0, projectsCreated: 0, catalogCreated: 0, catalogFilled: 0, added: 0, updated: 0, extra: 0, removed: 0, errors: 0,
-    suppliersCreated: 0, offersCreated: 0, pricesUpdated: 0,
+    suppliersCreated: 0, offersCreated: 0, pricesUpdated: 0, competitorsCreated: 0, competitorsUpdated: 0,
   };
   const catalogPlanned = new Set(); // в режиме отчёта не считать одно и то же новое комплектующее дважды
 
@@ -333,7 +335,8 @@ async function main() {
       `позиций спецификации +${totals.added} / изменено ${totals.updated} / удалено ${totals.removed} / лишних ${totals.extra}, ` +
       `чертежей загружено/обновлено ${totals.drawings}, ` +
       `свод цен: поставщиков +${totals.suppliersCreated}, кроссировок +${totals.offersCreated}, ` +
-      `цен обновлено ${totals.pricesUpdated}, ошибок ${totals.errors}`,
+      `цен обновлено ${totals.pricesUpdated}, продавцов Ozon +${totals.competitorsCreated} / изменено ${totals.competitorsUpdated}, ` +
+      `ошибок ${totals.errors}`,
   );
   if (!args.apply) console.log("Ничего не записано. Для применения: node agent.js --apply");
   if (args.reportPath) {
@@ -472,8 +475,9 @@ async function runPriceStage(api, args, config, report, totals) {
   }
   if (!gen.actions.length) log("без изменений");
 
-  // 4. согласованные проекты: спецификация, основное предложение, плановая цена
+  // 4. согласованные проекты: спецификация, основное предложение, плановая цена, топ продавцов Ozon
   const touched = new Map(); // projectId -> Set(componentId), если несколько строк плана ведут в один проект
+  const ozonByProject = new Map(); // projectId -> { project, lists[], log }
   for (const entry of data.projects) {
     const title = `${entry.brand} ${entry.model}${entry.gen ? ` ${entry.gen}` : ""}`;
     const r = section(`${title} — ${entry.ready}`);
@@ -578,10 +582,45 @@ async function runPriceStage(api, args, config, report, totals) {
         }
       }
       if (r.actions.every((a) => !a.startsWith("спецификация"))) plog("спецификация: без изменений");
+      const oz = ozonByProject.get(project.id) ?? { project, lists: [], log: plog, r };
+      oz.lists.push(entry.ozon ?? []);
+      ozonByProject.set(project.id, oz);
     } catch (e) {
       totals.errors++;
       r.errors.push(e.message);
       console.error(`    ✖ ошибка: ${e.message}`);
+    }
+  }
+
+  // 5. топ продавцов Ozon → «Конкуренты» проекта (блок «Топ-продавцы Ozon» на Обзоре)
+  for (const [projectId, oz] of ozonByProject) {
+    try {
+      const wanted = mergeOzon(oz.lists);
+      const isReal = !String(projectId).startsWith("planned:");
+      const current = isReal ? await api.get(`/api/projects/${projectId}/competitors`) : [];
+      const diff = diffCompetitors(current, wanted);
+      for (const c of diff.create) {
+        oz.log(`Ozon + ${c.sellerName}: ${c.productName} — ${c.price} ₽ (${c.comment.split(" · ")[0]})`);
+        totals.competitorsCreated++;
+        if (args.apply && isReal) await api.post(`/api/projects/${projectId}/competitors`, c);
+      }
+      for (const { row, payload } of diff.update) {
+        oz.log(`Ozon ~ ${payload.sellerName}: ${payload.comment.split(" · ")[0]}`);
+        totals.competitorsUpdated++;
+        if (args.apply) await api.patch(`/api/projects/${projectId}/competitors/${row.id}`, payload);
+      }
+      for (const row of diff.remove) {
+        oz.log(`Ozon − ${row.sellerName}: ${row.productName} (выпал из топа)`);
+        totals.competitorsUpdated++;
+        if (args.apply) await api.del(`/api/projects/${projectId}/competitors/${row.id}`);
+      }
+      if (!diff.create.length && !diff.update.length && !diff.remove.length && wanted.length) {
+        oz.log(`Ozon: топ-${wanted.length} продавцов без изменений`);
+      }
+    } catch (e) {
+      totals.errors++;
+      oz.r.errors.push(`Ozon: ${e.message}`);
+      console.error(`    ✖ Ozon: ${e.message}`);
     }
   }
 }
