@@ -181,7 +181,10 @@ OZON_ALIAS = {
     "Land Cruiser 150 Prado|2009-2024": [("Land Cruiser 150 Prado (левый руль)", "2009-2024"),
                                          ("Land Cruiser 150 Prado (правый руль)", "2009-2024")],
 }
-OZON_TOP = 5  # сколько продавцов на проект передаётся в приложение
+OZON_TOP = 5  # сколько товаров на проект передаётся в приложение
+# В приложение («Топ-продавцы Ozon» проекта) передаются только товары этого продавца —
+# чтобы со страницы проекта сразу открывать его карточки на Ozon
+OZON_SELLER = "Фирма Концепт Авто"
 
 
 def nospace(v):
@@ -392,7 +395,7 @@ def main():
             ready = "Нет данных"
         share = round(kit_rub / p["avg"] * 100, 2) if kit_rub and p["avg"] else None
         if p["approved"]:
-            top = ozon_for(p, ozon)[:OZON_TOP]
+            top = [o for o in ozon_for(p, ozon) if o["seller"] == OZON_SELLER][:OZON_TOP]
             json_projects.append(dict(
                 ozon=[dict(seller=o["seller"], product=o["title"], url=o["url"], price=o["avg"], qty=o["qty"],
                            sum=o["sum"], comment=ozon_comment(o, i + 1)) for i, o in enumerate(top)],
@@ -406,10 +409,12 @@ def main():
             ozon_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет", i + 1,
                               o["seller"], o["maker"], o["title"], o["category"], o["qty"], o["sum"], o["avg"], o["min"],
                               o["scheme"], o["created"], o["url"]])
+        mine = [o for o in sellers if o["seller"] == OZON_SELLER]
         top_seller = (f"{sellers[0]['seller']} — {sellers[0]['qty']:g} шт, {rub(sellers[0]['avg'])} ₽"
                       if sellers else None)
+        mine_links = "\n".join(f"{o['url']} — {o['qty']:g} шт, {rub(o['avg'])} ₽" for o in mine) or None
         proj_rows.append([p["group"], p["brand"], p["model"], p["gen"], "Да" if p["approved"] else "Нет",
-                          p["qty"], p["sum"], p["avg"], top_seller, len(sellers) or None, p["kind"], ", ".join(map(str, drawings)) or None,
+                          p["qty"], p["sum"], p["avg"], top_seller, len(sellers) or None, mine_links, p["kind"], ", ".join(map(str, drawings)) or None,
                           ", ".join(dict.fromkeys(blocks[r]["name"] for r in kit_rows)) or None, n_lines or None,
                           round(kit_cny, 3) if kit_rub else None, kit_rub, file_kit, "; ".join(alt_costs) or None, bt, share,
                           ready,
@@ -473,12 +478,12 @@ def main():
     write_sheet(wb, "Проекты",
                 ["Группа", "Марка", "Модель", "Поколение", "Согласовано", "Заказано, шт", "Заказано, ₽",
                  "Ср. цена продажи, ₽", "Топ-продавец Ozon (заказано, ср. цена)",
-                 "Товаров на Ozon", "Тип проводки", "№ чертежа", "Блок свода цен", "Позиций разъёмов",
+                 "Товаров на Ozon", f"Ссылки {OZON_SELLER} (в приложение)", "Тип проводки", "№ чертежа", "Блок свода цен", "Позиций разъёмов",
                  "Разъёмы на комплект, CNY", "Разъёмы на комплект, ₽", "Итог на комплект по своду (как в файле), ₽",
                  "Альтернативный вариант, ₽",
                  "Цена первичный анализ, ₽",
                  "Доля разъёмов в цене продажи, %", "Готовность", "Чего не хватает", "Комментарий"],
-                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 34, 9, 30, 9, 26, 9, 11, 11, 13, 40, 11, 11, 15, 40, 50], proj_fill)
+                proj_rows, [10, 11, 28, 13, 11, 10, 12, 11, 34, 9, 50, 30, 9, 26, 9, 11, 11, 13, 40, 11, 11, 15, 40, 50], proj_fill)
     write_sheet(wb, "Цены поставщиков",
                 ["Блок свода цен", "Строка", "Сторона", "Роль", "OEM артикул", "Кол-во на комплект", "Поставщик",
                  "Артикул поставщика", "MOQ", "Цена разъёма (корпус + пины + допы), CNY", "Сумма на комплект, CNY",
@@ -488,7 +493,7 @@ def main():
                 ["Группа", "Марка", "Модель", "Поколение", "Согласовано", "Место", "Продавец", "Бренд", "Товар",
                  "Категория", "Заказано, шт", "Заказано, ₽", "Ср. цена, ₽", "Мин. цена, ₽", "Схема", "Карточка с",
                  "Ссылка"], ozon_rows, [10, 11, 26, 12, 11, 7, 26, 14, 40, 26, 10, 12, 11, 11, 9, 12, 40],
-                [OKF if r[5] == 1 else None for r in ozon_rows])
+                [OKF if r[6] == OZON_SELLER else None for r in ozon_rows])
     write_sheet(wb, "Замечания", ["Раздел", "Объект", "Замечание"], remarks, [12, 30, 100])
     write_sheet(wb, "Параметры", ["Параметр", "Значение"], [
         ["Дата выгрузки", date.today().isoformat()],
