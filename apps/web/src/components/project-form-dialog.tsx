@@ -7,12 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/lib/api";
 import {
+  ORIGIN_LABELS,
+  ORIGIN_VALUES,
   OVERALL_STATUSES,
   OVERALL_STATUS_LABELS,
   PROCESS_FIELDS,
   PROCESS_LABELS,
   PROCESS_OPTIONS,
   STATUS_LABELS,
+  type Origin,
 } from "@/lib/statuses";
 import type { Project, ProjectInput } from "@/lib/types";
 
@@ -21,6 +24,7 @@ type FormState = {
   article: string;
   responsible: string;
   overallStatus: string;
+  origin: Origin;
   plannedDate: string;
 } & Record<(typeof PROCESS_FIELDS)[number], string>;
 
@@ -30,6 +34,7 @@ function emptyForm(): FormState {
     article: "",
     responsible: "",
     overallStatus: "active",
+    origin: "foreign",
     plannedDate: "",
   } as FormState;
   for (const f of PROCESS_FIELDS) base[f] = "not_started";
@@ -42,6 +47,7 @@ function toForm(project: Project): FormState {
     article: project.article ?? "",
     responsible: project.responsible ?? "",
     overallStatus: project.overallStatus,
+    origin: project.origin,
     plannedDate: project.plannedDate ? project.plannedDate.slice(0, 10) : "",
   } as FormState;
   for (const f of PROCESS_FIELDS) base[f] = project[f];
@@ -100,6 +106,10 @@ export function ProjectFormDialog({
       article: form.article.trim() || null,
       responsible: form.responsible.trim() || null,
       overallStatus: form.overallStatus as Project["overallStatus"],
+      // При создании поле не показываем — сервер сам классифицирует по
+      // марке (src/origin.ts). Отправляем явно только при редактировании,
+      // где это ручная корректировка.
+      ...(project ? { origin: form.origin } : {}),
       plannedDate: form.plannedDate || null,
     };
     for (const f of PROCESS_FIELDS) payload[f] = form[f];
@@ -145,6 +155,23 @@ export function ProjectFormDialog({
                 </SelectContent>
               </Select>
             </div>
+            {project && (
+              <div className="flex flex-col gap-1.5">
+                <Label>Отечественный/иномарка</Label>
+                <Select value={form.origin} onValueChange={(v) => setForm({ ...form, origin: v as Origin })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ORIGIN_VALUES.map((o) => (
+                      <SelectItem key={o} value={o}>
+                        {ORIGIN_LABELS[o]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="plannedDate">Плановая дата завершения</Label>
               <Input
