@@ -1,4 +1,4 @@
-import type { OverallStatus, ProcessField } from "./statuses";
+import type { OverallStatus, Origin, ProcessField } from "./statuses";
 
 export type Project = {
   id: string;
@@ -6,6 +6,9 @@ export type Project = {
   article: string | null;
   responsible: string | null;
   overallStatus: OverallStatus;
+  // Отечественный/иномарка — по марке (первое слово названия), см.
+  // apps/server/src/origin.ts. Обычное редактируемое поле.
+  origin: Origin;
   plannedDate: string | null;
   createdAt: string;
   updatedAt: string;

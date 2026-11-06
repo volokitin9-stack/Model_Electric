@@ -124,6 +124,7 @@ export const OTHER_FIELD_LABELS: Record<string, string> = {
   article: "Артикул",
   responsible: "Ответственный",
   overallStatus: "Общий статус",
+  origin: "Отечественный/иномарка",
   plannedDate: "Плановая дата завершения",
 };
 

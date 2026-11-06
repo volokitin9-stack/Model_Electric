@@ -28,39 +28,40 @@
 :root {
   --radius: 0.5rem;
 
-  /* Промышленно-светлая тема: белый/светло-серый фон, чёткий текст,
-     цвет используется адресно — для статусов, не для декора. */
-  --background: #f6f7f8;
-  --foreground: #16181d;
+  /* Палитра по МАСТЕР-ТЗ §2.2 (светлая SaaS-схема: белые рабочие
+     поверхности, светло-серый фон приложения, синие акценты). Значения
+     — ровно те, что заданы в ТЗ, не приблизительные. */
+  --background: #f7f8fa;
+  --foreground: #111827;
   --card: #ffffff;
-  --card-foreground: #16181d;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #16181d;
-  --primary: #1f4ed8;
+  --popover-foreground: #111827;
+  --primary: #2454e6;
   --primary-foreground: #ffffff;
   --secondary: #eef0f3;
-  --secondary-foreground: #16181d;
+  --secondary-foreground: #111827;
   --muted: #eef0f3;
-  --muted-foreground: #6b7280;
-  --accent: #eef2ff;
-  --accent-foreground: #1f4ed8;
-  --destructive: #d13438;
+  --muted-foreground: #64748b;
+  --accent: #eaf0ff;
+  --accent-foreground: #2454e6;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e2e5e9;
+  --border: #e2e8f0;
   --input: #dde1e6;
-  --ring: #1f4ed8;
+  --ring: #2454e6;
 
   /* статусная кодировка — единая палитра для бейджей/прогресса */
   --status-neutral-bg: #eef0f3;
   --status-neutral-fg: #4b5563;
-  --status-progress-bg: #e3edff;
-  --status-progress-fg: #1f4ed8;
-  --status-waiting-bg: #fef3e2;
-  --status-waiting-fg: #a35b00;
-  --status-done-bg: #e3f7e9;
-  --status-done-fg: #15803d;
-  --status-problem-bg: #fde8e8;
-  --status-problem-fg: #c81e1e;
+  --status-progress-bg: #eaf0ff;
+  --status-progress-fg: #2454e6;
+  --status-waiting-bg: #fdf1e2;
+  --status-waiting-fg: #d97706;
+  --status-done-bg: #e6f6ec;
+  --status-done-fg: #16a34a;
+  --status-problem-bg: #fce8e8;
+  --status-problem-fg: #dc2626;
   --status-cancelled-bg: #f1f1f2;
   --status-cancelled-fg: #8a8f98;
 }

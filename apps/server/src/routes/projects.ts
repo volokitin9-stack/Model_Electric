@@ -10,6 +10,7 @@ import {
   computeNextAction,
   computeProgress,
 } from "../statuses.js";
+import { ORIGIN_VALUES, classifyOrigin } from "../origin.js";
 
 export const projectsRouter = Router();
 
@@ -18,6 +19,10 @@ const baseShape = {
   article: z.string().trim().max(100).nullable().optional(),
   responsible: z.string().trim().max(120).nullable().optional(),
   overallStatus: z.enum(OVERALL_STATUSES).optional(),
+  // Отечественный/иномарка — классифицируется автоматически по марке
+  // (первое слово названия) при создании, если не передано явно;
+  // дальше обычное редактируемое поле, см. src/origin.ts.
+  origin: z.enum(ORIGIN_VALUES).optional(),
   plannedDate: z
     .string()
     .datetime({ offset: true })
@@ -86,6 +91,7 @@ projectsRouter.post("/", async (req, res) => {
       article: data.article ?? null,
       responsible: data.responsible ?? null,
       overallStatus: data.overallStatus ?? "active",
+      origin: data.origin ?? classifyOrigin(data.name),
       plannedDate: data.plannedDate ? new Date(data.plannedDate) : null,
       searchConnectors: data.searchConnectors ?? "not_started",
       schemeDevelopment: data.schemeDevelopment ?? "not_started",

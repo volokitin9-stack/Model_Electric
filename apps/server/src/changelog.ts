@@ -1,10 +1,14 @@
 import { fieldLabel, STATUS_LABELS } from "./statuses.js";
+import { ORIGIN_LABELS } from "./origin.js";
+
+const VALUE_LABELS: Record<string, string> = { ...STATUS_LABELS, ...ORIGIN_LABELS };
 
 const TRACKED_FIELDS = [
   "name",
   "article",
   "responsible",
   "overallStatus",
+  "origin",
   "searchConnectors",
   "schemeDevelopment",
   "orderConnectors",
@@ -20,7 +24,7 @@ function displayValue(field: string, value: unknown): string | null {
   if (field === "plannedDate") {
     return new Date(value as string | Date).toISOString().slice(0, 10);
   }
-  if (typeof value === "string" && STATUS_LABELS[value]) return STATUS_LABELS[value];
+  if (typeof value === "string" && VALUE_LABELS[value]) return VALUE_LABELS[value];
   return String(value);
 }
 

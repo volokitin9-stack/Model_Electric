@@ -170,6 +170,14 @@ Object.assign(STATUS_LABELS, {
   discontinued: CROSS_REFERENCE_STATUS_LABELS.discontinued,
 });
 
+// Отечественный/иномарка — зеркало apps/server/src/origin.ts.
+export const ORIGIN_VALUES = ["domestic", "foreign"] as const;
+export type Origin = (typeof ORIGIN_VALUES)[number];
+export const ORIGIN_LABELS: Record<Origin, string> = {
+  domestic: "Отечественный",
+  foreign: "Иномарка",
+};
+
 export const CURRENCIES = ["RUB", "USD", "EUR", "CNY"] as const;
 
 export const AVAILABILITY_VALUES = ["yes", "no", "on_order"] as const;

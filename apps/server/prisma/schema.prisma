@@ -26,6 +26,13 @@ model Project {
 
   overallStatus String   @default("active")
 
+  // Отечественный/иномарка — правило по марке (всё под LADA — отечественные,
+  // остальное — иномарки, подтверждено владельцем), а не совпадение текста
+  // "на глаз": проставляется по первому слову названия при создании
+  // проекта, но это обычное поле — его можно поправить вручную, если
+  // классификация ошиблась. См. src/origin.ts.
+  origin String @default("foreign")
+
   // 7 независимых процессов разработки
   searchConnectors  String @default("not_started")
   schemeDevelopment String @default("not_started")
