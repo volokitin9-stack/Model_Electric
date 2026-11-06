@@ -8,9 +8,10 @@ const ICON_TONE: Record<KpiKey, string> = {
   overdue: "text-[var(--status-problem-fg)]",
   ready: "text-[var(--status-done-fg)]",
   completed: "text-muted-foreground",
+  sales: "text-primary",
 };
 
-const ORDER: KpiKey[] = ["total", "active", "waiting", "overdue", "ready", "completed"];
+const ORDER: KpiKey[] = ["total", "active", "waiting", "overdue", "ready", "completed", "sales"];
 
 export function KpiCards({
   counts,
@@ -22,7 +23,7 @@ export function KpiCards({
   onToggle: (key: KpiKey) => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-7">
       {ORDER.map((key) => (
         <button
           key={key}
@@ -33,7 +34,9 @@ export function KpiCards({
             active === key && "border-primary ring-1 ring-primary",
           )}
         >
-          <div className={cn("tabular text-2xl font-semibold leading-none", ICON_TONE[key])}>{counts[key]}</div>
+          <div className={cn("tabular text-2xl font-semibold leading-none", ICON_TONE[key])}>
+            {counts[key].toLocaleString("ru-RU")}
+          </div>
           <div className="mt-1.5 text-xs text-muted-foreground">{KPI_LABELS[key]}</div>
         </button>
       ))}

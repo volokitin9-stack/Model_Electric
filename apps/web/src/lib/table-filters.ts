@@ -25,6 +25,18 @@ export const dateRange: FilterFn<Project> = (row, columnId, filterValue: { from?
   return true;
 };
 
+export type NumberRangeFilter = { from?: number; to?: number; emptyOnly?: boolean };
+
+export const numberRange: FilterFn<Project> = (row, columnId, filterValue: NumberRangeFilter | undefined) => {
+  if (!filterValue || (filterValue.from == null && filterValue.to == null && !filterValue.emptyOnly)) return true;
+  const raw = row.getValue(columnId) as number | null;
+  if (filterValue.emptyOnly) return raw == null;
+  if (raw == null) return false;
+  if (filterValue.from != null && raw < filterValue.from) return false;
+  if (filterValue.to != null && raw > filterValue.to) return false;
+  return true;
+};
+
 export const globalSearch: FilterFn<Project> = (row, _columnId, filterValue) => {
   if (!filterValue) return true;
   const q = String(filterValue).toLowerCase();

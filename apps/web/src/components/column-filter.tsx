@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import type { NumberRangeFilter } from "@/lib/table-filters";
 
 /**
  * Фильтр в духе Excel: для текстовых колонок — поиск по подстроке, для
@@ -19,7 +20,7 @@ export function ColumnFilter<TData>({
   labelOf,
 }: {
   column: Column<TData, unknown>;
-  kind: "text" | "enum" | "date";
+  kind: "text" | "enum" | "date" | "number";
   /** Для kind="enum": как подписать значение. */
   labelOf?: (raw: string) => string;
 }) {
@@ -32,15 +33,22 @@ export function ColumnFilter<TData>({
       ? Boolean(filterValue)
       : kind === "date"
         ? Boolean(filterValue && ((filterValue as { from?: string; to?: string }).from || (filterValue as { from?: string; to?: string }).to))
-        : Array.isArray(filterValue);
+        : kind === "number"
+          ? Boolean(
+              filterValue &&
+                ((filterValue as NumberRangeFilter).from != null ||
+                  (filterValue as NumberRangeFilter).to != null ||
+                  (filterValue as NumberRangeFilter).emptyOnly),
+            )
+          : Array.isArray(filterValue);
 
   const facetedValues = column.getFacetedUniqueValues();
-  // Текстовые колонки тоже дают facetedValues (включая null для пустых
-  // ячеек) — отфильтровываем null/undefined, enum-ветка ниже
-  // использует этот список, текстовая — нет.
+  // Используется только веткой kind="enum" ниже — для остальных видов
+  // facetedValues может содержать не-строковые значения (числа колонок
+  // kind="number" и т.п.), на которых .toLowerCase() упал бы.
   const allValues = useMemo(
-    () => Array.from(facetedValues.keys()).filter((v): v is string => v != null).sort(),
-    [facetedValues],
+    () => (kind === "enum" ? Array.from(facetedValues.keys()).filter((v): v is string => v != null).sort() : []),
+    [facetedValues, kind],
   );
   const visibleValues = useMemo(
     () => allValues.filter((v) => (labelOf?.(v) ?? v).toLowerCase().includes(query.toLowerCase())),
@@ -101,6 +109,53 @@ export function ColumnFilter<TData>({
                 })
               }
             />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 justify-start px-1 text-xs text-muted-foreground"
+              onClick={() => column.setFilterValue(undefined)}
+            >
+              <X className="h-3 w-3" /> Сбросить
+            </Button>
+          </div>
+        ) : kind === "number" ? (
+          <div className="flex flex-col gap-2">
+            <label className="text-xs text-muted-foreground">Больше или равно</label>
+            <Input
+              type="number"
+              className="h-8 text-sm"
+              value={(filterValue as NumberRangeFilter | undefined)?.from ?? ""}
+              onChange={(e) =>
+                column.setFilterValue((prev: NumberRangeFilter | undefined) => {
+                  const next = { ...prev, from: e.target.value === "" ? undefined : Number(e.target.value) };
+                  return next.from != null || next.to != null || next.emptyOnly ? next : undefined;
+                })
+              }
+            />
+            <label className="text-xs text-muted-foreground">Меньше или равно</label>
+            <Input
+              type="number"
+              className="h-8 text-sm"
+              value={(filterValue as NumberRangeFilter | undefined)?.to ?? ""}
+              onChange={(e) =>
+                column.setFilterValue((prev: NumberRangeFilter | undefined) => {
+                  const next = { ...prev, to: e.target.value === "" ? undefined : Number(e.target.value) };
+                  return next.from != null || next.to != null || next.emptyOnly ? next : undefined;
+                })
+              }
+            />
+            <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+              <Checkbox
+                checked={Boolean((filterValue as NumberRangeFilter | undefined)?.emptyOnly)}
+                onCheckedChange={(c) =>
+                  column.setFilterValue((prev: NumberRangeFilter | undefined) => {
+                    const next = { ...prev, emptyOnly: Boolean(c) };
+                    return next.from != null || next.to != null || next.emptyOnly ? next : undefined;
+                  })
+                }
+              />
+              Только без данных
+            </label>
             <Button
               variant="ghost"
               size="sm"

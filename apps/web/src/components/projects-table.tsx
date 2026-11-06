@@ -29,7 +29,7 @@ import { ColumnFilter } from "@/components/column-filter";
 import { StatusSelect } from "@/components/status-select";
 import { useLocalStorageState } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
-import { dateRange, enumIn, globalSearch, textContains } from "@/lib/table-filters";
+import { dateRange, enumIn, globalSearch, numberRange, textContains } from "@/lib/table-filters";
 import {
   OVERALL_STATUSES,
   OVERALL_STATUS_LABELS,
@@ -43,6 +43,7 @@ import type { Project } from "@/lib/types";
 const COLUMN_LABELS: Record<string, string> = {
   name: "Название проекта",
   article: "Артикул",
+  salesQty28d: "Продажи рынка/мес., шт.",
   responsible: "Ответственный",
   overallStatus: "Общий статус",
   ...PROCESS_LABELS,
@@ -163,6 +164,29 @@ export function ProjectsTable({
         size: 140,
         filterFn: textContains,
         cell: ({ getValue }) => <span className="text-muted-foreground">{(getValue() as string) || "—"}</span>,
+      },
+      {
+        id: "salesQty28d",
+        accessorKey: "salesQty28d",
+        header: ({ column }) => (
+          <div className="flex items-center">
+            <button className="flex items-center gap-1" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+              Продажи рынка/мес., шт. <ArrowUpDown className="h-3 w-3" />
+            </button>
+            <ColumnFilter column={column} kind="number" />
+          </div>
+        ),
+        size: 170,
+        filterFn: numberRange,
+        sortingFn: (a, b) => {
+          const av = a.original.salesQty28d ?? -1;
+          const bv = b.original.salesQty28d ?? -1;
+          return av - bv;
+        },
+        cell: ({ getValue }) => {
+          const v = getValue() as number | null;
+          return <span className="tabular">{v == null ? "—" : v.toLocaleString("ru-RU")}</span>;
+        },
       },
       {
         id: "responsible",

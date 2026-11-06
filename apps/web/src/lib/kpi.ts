@@ -1,6 +1,6 @@
 import type { Project } from "./types";
 
-export type KpiKey = "total" | "active" | "waiting" | "overdue" | "ready" | "completed";
+export type KpiKey = "total" | "active" | "waiting" | "overdue" | "ready" | "completed" | "sales";
 
 export const KPI_LABELS: Record<KpiKey, string> = {
   total: "Всего проектов",
@@ -9,6 +9,10 @@ export const KPI_LABELS: Record<KpiKey, string> = {
   overdue: "Просрочены",
   ready: "Готовы к запуску",
   completed: "Завершены",
+  // МАСТЕР-ТЗ §5.3: это продажи СТОРОННИХ продавцов на Ozon (рыночный
+  // спрос), не продажи компании — отдельного источника продаж компании
+  // нет, см. Project.salesQty28d.
+  sales: "Продажи рынка/мес., шт.",
 };
 
 export function isOverdue(p: Project, today: string): boolean {
@@ -31,6 +35,8 @@ export function matchesKpi(p: Project, key: KpiKey, today: string): boolean {
       return p.overallStatus === "ready";
     case "completed":
       return p.overallStatus === "completed";
+    case "sales":
+      return p.salesQty28d != null;
   }
 }
 
@@ -41,5 +47,8 @@ export function computeKpis(projects: Project[]): Record<KpiKey, number> {
   for (const key of keys) {
     result[key] = projects.filter((p) => matchesKpi(p, key, today)).length;
   }
+  // "Продажи рынка/мес." — не количество проектов, а сумма продаж по
+  // всем проектам с данными (28-дневный период Ozon, см. Project.salesQty28d).
+  result.sales = projects.reduce((sum, p) => sum + (p.salesQty28d ?? 0), 0);
   return result;
 }

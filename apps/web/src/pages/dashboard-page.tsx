@@ -9,6 +9,7 @@ import { ProjectsTable } from "@/components/projects-table";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
 import { ProjectSidePanel } from "@/components/project-side-panel";
 import { SpecImportDialog } from "@/components/spec-import-dialog";
+import { OriginToggle, type OriginFilter } from "@/components/origin-toggle";
 import { api } from "@/lib/api";
 import { computeKpis, matchesKpi, type KpiKey } from "@/lib/kpi";
 import type { Project } from "@/lib/types";
@@ -19,17 +20,25 @@ export function DashboardPage() {
 
   const [search, setSearch] = useState("");
   const [activeKpi, setActiveKpi] = useState<KpiKey | null>(null);
+  const [originFilter, setOriginFilter] = useState<OriginFilter>("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [specImportOpen, setSpecImportOpen] = useState(false);
   const [panelProject, setPanelProject] = useState<Project | null>(null);
 
   const data = projectsQuery.data ?? [];
-  const kpiCounts = useMemo(() => computeKpis(data), [data]);
+  // Фильтр Все/Отечественные/Иномарки влияет и на KPI, и на таблицу —
+  // МАСТЕР-ТЗ §6.
+  const originData = useMemo(
+    () => (originFilter === "all" ? data : data.filter((p) => p.origin === originFilter)),
+    [data, originFilter],
+  );
+  const kpiCounts = useMemo(() => computeKpis(originData), [originData]);
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const externalFilter = useCallback(
-    (p: Project) => (activeKpi ? matchesKpi(p, activeKpi, today) : true),
-    [activeKpi, today],
+    (p: Project) =>
+      (originFilter === "all" || p.origin === originFilter) && (activeKpi ? matchesKpi(p, activeKpi, today) : true),
+    [activeKpi, today, originFilter],
   );
 
   const updateMutation = useMutation({
@@ -46,6 +55,7 @@ export function DashboardPage() {
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-4 py-4 sm:px-6">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-lg font-semibold">Дашборд проектов</h1>
+        <OriginToggle value={originFilter} onChange={setOriginFilter} />
         <div className="relative ml-auto w-full max-w-xs">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
