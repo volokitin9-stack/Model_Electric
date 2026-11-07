@@ -96,7 +96,14 @@ function joinParts(parts) {
 }
 
 /** Строит план переноса одного чертежа. */
-export function buildDrawingPlan(spec, { nameTemplate } = {}) {
+export function buildDrawingPlan(spec, { nameTemplate, componentOverrides = {} } = {}) {
+  // Решения владельца по конкретным P/N (project-map.json → componentOverrides):
+  // статус и пометка важнее статуса из каталога чертежа.
+  const overrides = new Map(
+    Object.entries(componentOverrides)
+      .filter(([k]) => !k.startsWith("_"))
+      .map(([k, v]) => [normalizeArticle(k), v]),
+  );
   const items = new Map(); // normalizedArticle -> item
 
   for (const row of spec.bom) {
@@ -142,10 +149,18 @@ export function buildDrawingPlan(spec, { nameTemplate } = {}) {
     });
   }
 
-  const list = [...items.values()].map((it) => ({
-    ...it,
-    projectComment: `Чертёж №${spec.drawingNo}: ${it.occurrences.join("; ")}`,
-  }));
+  const list = [...items.values()].map((it) => {
+    const ov = overrides.get(it.key);
+    const base = `Чертёж №${spec.drawingNo}: ${it.occurrences.join("; ")}`;
+    if (!ov) return { ...it, projectComment: base };
+    return {
+      ...it,
+      status: ov.status ?? it.status,
+      overrideNote: ov.note ?? null,
+      comment: joinParts([ov.note, it.comment]),
+      projectComment: ov.note ? `${base} · ${ov.note}` : base,
+    };
+  });
 
   const allConfirmed = list.length > 0 && list.every((i) => i.status === "confirmed");
 

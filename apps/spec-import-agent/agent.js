@@ -85,6 +85,8 @@ function loadConfig(args) {
     // project-map.json (в репозитории) + projectMap из config.json (локально, приоритетнее)
     projectMap: { ...shared.projectMap, ...(raw.projectMap ?? {}) },
     separateProjects: { ...shared.separateProjects, ...(raw.separateProjects ?? {}) },
+    // Статус/пометка по конкретным P/N, решённые владельцем (например, DJ451-1 — «Подобран»)
+    componentOverrides: { ...shared.componentOverrides, ...(raw.componentOverrides ?? {}) },
     // Привязка строк плана разработок («plan-<строка>») к существующим проектам — для этапа «Свод цен»
     priceProjectMap: { ...shared.priceProjectMap, ...(raw.priceProjectMap ?? {}) },
     pricesFile: path.resolve(
@@ -157,7 +159,9 @@ async function main() {
     try {
       const spec = readSpecFile(f);
       if (args.drawings.length && !args.drawings.includes(spec.drawingNo)) continue;
-      plans.push(buildDrawingPlan(spec, { nameTemplate: config.projectNameTemplate }));
+      plans.push(
+        buildDrawingPlan(spec, { nameTemplate: config.projectNameTemplate, componentOverrides: config.componentOverrides }),
+      );
     } catch (e) {
       console.error(`  ✖ ${path.relative(config.specsFolder, f)}: ${e.message}`);
     }
@@ -254,6 +258,9 @@ async function main() {
         const fill = {};
         if (!existing.description && item.description) fill.description = item.description;
         if (!existing.comment && item.comment) fill.comment = item.comment;
+        else if (item.overrideNote && !existing.comment?.includes(item.overrideNote)) {
+          fill.comment = [item.overrideNote, existing.comment].filter(Boolean).join(" · ");
+        }
         if (!existing.categoryId) {
           const cid = await ensureCategory(item.categoryName);
           if (cid || !args.apply) fill.categoryId = cid;
