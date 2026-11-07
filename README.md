@@ -23,6 +23,12 @@
 Сводка по всем чертежам (потребность по моделям, каталог, вся распиновка, все замечания):
 [`specs/Summary_all_drawings.xlsx`](specs/Summary_all_drawings.xlsx).
 
+## План проекта
+
+Вехи, задачи и статусы — [`project/GANTT.md`](project/GANTT.md) (диаграмма Ганта) и
+[`project/Gantt.xlsx`](project/Gantt.xlsx). Источник — [`project/plan.yaml`](project/plan.yaml), обновление:
+`python3 tools/build_gantt.py`.
+
 ## Структура
 
 `specs/Wiring_N/`:
