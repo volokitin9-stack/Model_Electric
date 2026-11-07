@@ -129,3 +129,24 @@ test("project-map.json: Polo V SD → Polo 5, Largus 2012-2021 — отдель�
   assert.equal(matchProject(projects, plan, { 6: "me vw polo5" }).project.id, "p1");
   assert.equal(matchProject(projects, plan, { 6: "Volkswagen Polo 5 — проводка ТСУ" }).project.id, "p1");
 });
+
+test("componentOverrides: DJ451-1 — «Подобран» с пометкой во всех чертежах", async () => {
+  const fs = await import("node:fs");
+  const map = JSON.parse(fs.readFileSync(new URL("../project-map.json", import.meta.url), "utf8"));
+  const dirs = fs.readdirSync(SPECS).filter((d) => /^Wiring_\d+$/.test(d));
+  let seen = 0;
+  for (const d of dirs) {
+    const plan = buildDrawingPlan(readSpecFile(path.join(SPECS, d, `${d}_spec.xlsx`)), { componentOverrides: map.componentOverrides });
+    const dj = plan.items.find((i) => i.internalArticle === "DJ451-1");
+    if (!dj) continue;
+    seen++;
+    assert.equal(dj.status, "selected", d);
+    assert.match(dj.projectComment, /у поставщиков не запрашивается/);
+    assert.match(dj.comment, /^Используется в производстве/);
+  }
+  assert.ok(seen >= 12);
+  const existing = [{ id: "1", component: { internalArticle: "DJ451-1" }, quantity: "7", status: "searching", comment: "Чертёж №1: 1 поз.3 — 7 шт" }];
+  const plan1 = buildDrawingPlan(readSpecFile(path.join(SPECS, "Wiring_1", "Wiring_1_spec.xlsx")), { componentOverrides: map.componentOverrides });
+  const diff = diffProjectComponents(existing, plan1.items.filter((i) => i.internalArticle === "DJ451-1"));
+  assert.equal(diff.update[0].patch.status, "selected");
+});
