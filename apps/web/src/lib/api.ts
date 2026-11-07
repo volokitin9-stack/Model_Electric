@@ -6,6 +6,7 @@ import type {
   CrossReference,
   ExportHistoryEntry,
   ExportPreview,
+  GanttPlan,
   ImportBatch,
   ImportPreviewResult,
   ImportProfile,
@@ -98,6 +99,10 @@ export const api = {
   // Кнопка "Обновить данные" на дашборде — сервер сам запускает
   // spec-import-agent; apply:false только показывает план.
   runSpecImport: (apply: boolean) => request<SpecImportReport>("/spec-import/run", { method: "POST", body: JSON.stringify({ apply }) }),
+
+  // Вкладка "График проекта" — данные из project/plan.yaml, ведёт
+  // отдельный агент.
+  getGantt: () => request<GanttPlan>("/gantt"),
 
   projectSummary: (projectId: string) => request<ProjectSummary>(`/projects/${projectId}/summary`),
 

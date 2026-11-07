@@ -47,6 +47,10 @@ COPY specs /specs
 # export/price_import.json); путь по умолчанию у агента — ../../export.
 COPY export/price_import.json /export/price_import.json
 
+# План проекта (вехи/задачи/статусы) для вкладки "График проекта" —
+# единственный источник правды, ведёт отдельный агент, см. src/gantt.ts.
+COPY project/plan.yaml /project/plan.yaml
+
 # Каталог загруженных фото проектов — монтируйте сюда постоянный volume
 # хостинга (Railway/Render "persistent disk"), иначе фото пропадут при
 # каждом новом деплое.

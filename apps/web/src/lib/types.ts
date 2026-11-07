@@ -374,3 +374,34 @@ export type ConnectorSearchResult = {
   componentMatches: Component[];
   results: ConnectorSearchResultGroup[];
 };
+
+// --- График проекта (вехи/задачи), ведёт отдельный агент в
+// project/plan.yaml — см. apps/server/src/gantt.ts ---
+
+export type GanttStatus = "done" | "active" | "planned" | "blocked";
+
+export type GanttTask = {
+  id: string;
+  name: string;
+  status: GanttStatus;
+  milestone: boolean;
+  start: string | null;
+  end: string | null;
+  date: string | null;
+  period: string | null;
+  owner: string | null;
+  note: string | null;
+  after: string[];
+  progress: number;
+  overdue: boolean;
+  subtasks: GanttTask[];
+};
+
+export type GanttPhase = { id: string; name: string; tasks: GanttTask[] };
+
+export type GanttPlan = {
+  project: string;
+  updated: string | null;
+  phases: GanttPhase[];
+  summary: { total: number; done: number; active: number; planned: number; blocked: number; overdue: number; progress: number };
+};
